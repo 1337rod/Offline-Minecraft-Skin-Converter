@@ -75,10 +75,10 @@
             border-radius: 50px;
             display: inline-flex;
             align-items: center;
-            padding: 6px 12px;
+            padding: 10px 20px;
             text-decoration: none;
             gap: 8px;
-            font-size: 16px;
+            font-size: 37px;
             font-weight: 500;
             transition: transform var(--transition), box-shadow var(--transition);
         }
@@ -87,7 +87,7 @@
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
         }
         .kofi-btn img {
-            height: 24px;
+            height: 27px;
             border: none;
             vertical-align: middle;
         }
@@ -206,6 +206,13 @@
             transform: translateY(-2px);
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
             background: var(--border);
+        }
+        #privacy-link {
+          color: #c9e0ff;
+        }
+        
+        #privacy-link:hover {
+          color: #ffaa55;
         }
     </style>
 </head>
@@ -341,7 +348,8 @@
                 privacyTitle: 'Política de Privacidade e Termos de Serviço',
                 privacyText1: 'Este site não coleta, armazena ou processa qualquer dado pessoal. Todo o processamento da sua skin é feito diretamente no seu navegador.',
                 privacyText2: 'Os arquivos gerados ficam apenas no seu computador e não são enviados para a internet.',
-                privacyText3: 'O uso da ferramenta é inteiramente gratuito e não requer conta ou login.'
+                privacyText3: 'O uso da ferramenta é inteiramente gratuito e não requer conta ou login.',
+                privacyLinkText: 'Privacidade e Termos'
             },
             'en': {
                 h1: 'Offline Skin Converter',
@@ -382,7 +390,8 @@
                 privacyTitle: 'Privacy Policy and Terms of Service',
                 privacyText1: 'This website does not collect, store, or process any personal data. All skin processing is done directly in your browser.',
                 privacyText2: 'The generated files remain only on your computer and are not sent to the internet.',
-                privacyText3: 'The use of the tool is completely free and does not require an account or login.'
+                privacyText3: 'The use of the tool is completely free and does not require an account or login.',
+                privacyLinkText: 'Privacy and Terms'
             },
             'es': {
                 h1: 'Convertidor de Skins Offline',
@@ -423,7 +432,8 @@
                 privacyTitle: 'Política de Privacidad y Términos de Servicio',
                 privacyText1: 'Este sitio no recopila, almacena ni processa nenhum dado pessoal. Todo o processamento de sua skin se realiza directamente em seu navegador.',
                 privacyText2: 'Os arquivos gerados permanecem apenas em seu computador e não são enviados para a Internet.',
-                privacyText3: 'O uso da ferramenta é completamente gratuito e não requer uma conta ou início de sessão.'
+                privacyText3: 'O uso da ferramenta é completamente gratuito e não requer una cuenta o inicio de sesión.',
+                privacyLinkText: 'Privacidad y Términos'
             }
         };
         
@@ -433,6 +443,7 @@
         const privacyText1Element = document.getElementById('privacy-text-1');
         const privacyText2Element = document.getElementById('privacy-text-2');
         const privacyText3Element = document.getElementById('privacy-text-3');
+        const privacyLinkElement = document.getElementById('privacy-link');
 
         function updateText(lang) {
             const texts = translations[lang];
@@ -449,6 +460,7 @@
             privacyText2Element.textContent = texts.privacyText2;
             privacyText3Element.textContent = texts.privacyText3;
             toggleDetailsBtn.textContent = detailsContainer.style.display === 'flex' ? texts.toggleBtnTextAlt : texts.toggleBtnText;
+            privacyLinkElement.textContent = texts.privacyLinkText;
             
             const howToList = document.getElementById('how-to-list');
             howToList.innerHTML = '';
