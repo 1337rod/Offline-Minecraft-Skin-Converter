@@ -1,0 +1,6 @@
+# Ignora arquivos de sistema
+.DS_Store
+Thumbs.db
+
+# Ignora arquivos de pacote criados pela ferramenta
+*.zip
