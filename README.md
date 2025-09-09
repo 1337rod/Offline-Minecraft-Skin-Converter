@@ -13,7 +13,7 @@ The tool processes your skin file locally in your browser without sending any da
 
 <br>
 
-You can access the website [here](https://1337rod.github.io/offline-minecraft-skin-converter/)!
+You can access the website [here](https://1337rod.github.io/Offline-Minecraft-Skin-Converter/)!
 
 ---
 
