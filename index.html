@@ -21,8 +21,7 @@
         }
         *{box-sizing:border-box}
         body{
-            font-family:'Roboto',sans-serif;
-            background:var(--bg); color:var(--text); margin:0;
+            font-family:'Roboto',sans-serif; background:var(--bg); color:var(--text); margin:0;
             display:flex; align-items:center; justify-content:center; min-height:100vh;
             transition:background var(--transition),color var(--transition);
         }
@@ -62,16 +61,14 @@
             align-items: center;
         }
         .lang-selector select {
-            padding: 6px 10px;
-            border-radius: var(--radius);
+            padding: 6px 10px; border-radius: var(--radius);
             border: 1px solid var(--border);
             background: var(--card);
             color: var(--text);
         }
         /* Estilos do botão Ko-fi customizado */
         .kofi-btn {
-            background-color: #FF6333;
-            color: #fff;
+            background-color: #FF6333; color: #fff;
             border-radius: 50px;
             display: inline-flex;
             align-items: center;
@@ -83,85 +80,71 @@
             transition: transform var(--transition), box-shadow var(--transition);
         }
         .kofi-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            transform: translateY(-2px); box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
         }
         .kofi-btn img {
-            height: 27px;
-            border: none;
+            height: 27px; border: none;
             vertical-align: middle;
         }
         /* Estilos para o Easter Egg */
         .easter-egg-overlay {
-            position: fixed;
-            top: 0;
+            position: fixed; top: 0;
             left: 0;
             width: 100%;
             height: 100%;
             background: rgba(0, 0, 0, 0.9);
             display: none;
             align-items: center;
-            justify-content: center;
-            z-index: 1000;
+            justify-content: center; z-index: 1000;
             backdrop-filter: blur(5px);
         }
         .easter-egg-content {
-            position: relative;
-            background: var(--card);
+            position: relative; background: var(--card);
             border: 1px solid var(--border);
             border-radius: var(--radius);
             padding: 0;
             box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
-            max-width: 90%;
-            width: 560px;
+            max-width: 90%; width: 560px;
             aspect-ratio: 16/9;
             overflow: hidden;
         }
         #easter-egg-player {
-            width: 100%;
-            height: 100%;
+            width: 100%; height: 100%;
             border: none;
             border-radius: var(--radius);
         }
         .easter-egg-close {
-            position: absolute;
-            top: 0px;
+            position: absolute; top: 0px;
             right: 0px;
             background: rgba(0, 0, 0, 0.5);
             color: #fff;
             border: none;
             padding: 0;
             width: 30px;
-            height: 30px;
-            font-size: 20px;
+            height: 30px; font-size: 20px;
             cursor: pointer;
             display: flex;
             align-items: center;
-            justify-content: center;
-            z-index: 1001;
+            justify-content: center; z-index: 1001;
             transition: background 0.2s ease, color 0.2s ease;
             border-bottom-left-radius: var(--radius);
         }
         .easter-egg-close:hover {
-            background: var(--danger);
-            color: #fff;
+            background: var(--danger); color: #fff;
         }
         /* Estilos do Modal de Privacidade */
         .modal-overlay {
-            position: fixed;
-            top: 0;
+            position: fixed; top: 0;
             left: 0;
             width: 100%;
             height: 100%;
             background-color: rgba(0, 0, 0, 0.7);
             display: none;
             align-items: center;
-            justify-content: center;
-            z-index: 2000;
+            justify-content: center; z-index: 2000;
         }
         .modal-content {
-            background: var(--card);
-            color: var(--text);
+            background: var(--card); color: var(--text);
             padding: 30px;
             border-radius: var(--radius);
             max-width: 500px;
@@ -170,12 +153,10 @@
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
         }
         .modal-content h2 {
-            margin-top: 0;
-            text-align: center;
+            margin-top: 0; text-align: center;
         }
         .modal-close-btn {
-            position: absolute;
-            top: 10px;
+            position: absolute; top: 10px;
             right: 15px;
             font-size: 30px;
             background: transparent;
@@ -193,18 +174,15 @@
             text-align: center;
         }
         .toggle-btn {
-            background: var(--card);
-            color: var(--text);
+            background: var(--card); color: var(--text);
             border: 1px solid var(--border);
             padding: 12px 20px;
             border-radius: var(--radius);
             cursor: pointer;
-            font-weight: 500;
-            transition: transform var(--transition), box-shadow var(--transition), background var(--transition);
+            font-weight: 500; transition: transform var(--transition), box-shadow var(--transition), background var(--transition);
         }
         .toggle-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            transform: translateY(-2px); box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
             background: var(--border);
         }
         #privacy-link {
@@ -253,8 +231,7 @@
         <div class="info-box" style="text-align: center;">
             <h2 id="credits-title">Créditos</h2>
             <p class="info-text">
-                Powered by JSZip | 
-                <a href="#" id="privacy-link">Privacidade e Termos</a>
+                Powered by JSZip | <a href="#" id="privacy-link">Privacidade e Termos</a>
             </p>
         </div>
         
@@ -340,7 +317,7 @@
                 fileNamePrefix: 'Arquivo carregado: ',
                 alertWrongFormat: 'A imagem precisa ter 64×64 pixels.',
                 alertSelectPng: 'Por favor, selecione um arquivo PNG.',
-                readme: 'Este pacote é um recurso para o Minecraft Java Edition, gerado localmente para funcionar offline. Ele substitui todas as 9 skins padrão do jogo (incluindo Steve, Alex, Ari, etc.) pela sua skin personalizada. Como ele modifica os arquivos locais do jogo, a skin funcionará perfeitamente offline ou em servidores que não carregam skins, garantindo que você sempre possa ver sua skin e que outros jogadores que usam uma das skins padrão vejam a sua.\n\nSe você descompactou o arquivo por engano, não se preocupe! Com o *CTRL* pressionado (ou *CMD* no Mac), selecione o arquivo *pack.mcmeta* e a pasta *assets*. Depois, clique com o botão direito para compactar em um novo arquivo `.zip`. O site já manda no formato certo para ser usado diretamente na pasta de recursos do seu Minecraft, geralmente em `versãodoseumine/minecraft/resourcepacks`.\n\nCriado pelo 1337rod :)',
+                readme: 'Este pacote é um recurso para o Minecraft Java Edition, gerado localmente para funcionar offline. Ele substitui todas as 9 skins padrão do jogo (incluindo Steve, Alex, Ari, etc.) pela sua skin personalizada. Como ele modifica os arquivos locais do jogo, a skin funcionará perfeitamente offline ou em servidores que não carregam skins, garantindo que você sempre possa ver sua skin, e que as skins padrão de outros jogadores sejam substituídas pela sua, apenas para você.\\n\\nSe você descompactou o arquivo por engano, não se preocupe! Com o *CTRL* pressionado (ou *CMD* no Mac), selecione o arquivo *pack.mcmeta* e a pasta *assets*. Depois, clique com o botão direito para compactar em um novo arquivo `.zip`. O site já manda no formato certo para ser usado diretamente na pasta de recursos do seu Minecraft, geralmente em `versãodoseumine/minecraft/resourcepacks`.\\n\\nCriado pelo 1337rod :)',
                 mcmetaDesc: 'Pacote de skins gerado localmente para substituir as skins padrão do Minecraft. Funciona offline.',
                 kofiLink: 'Apoie no Ko-fi',
                 toggleBtnText: 'Ver Detalhes',
@@ -382,7 +359,7 @@
                 fileNamePrefix: 'File loaded: ',
                 alertWrongFormat: 'The image needs to be 64×64 pixels.',
                 alertSelectPng: 'Please select a PNG file.',
-                readme: 'This is a resource pack for Minecraft Java Edition, generated locally to work offline. It replaces all 9 default game skins (including Steve, Alex, Ari, etc.) with your custom skin. Since it modifies local game files, the skin will work perfectly offline or on servers that don\'t load skins, ensuring you can always see your skin and that other players using one of the default skins see yours.\n\nIf you accidentally unzipped the file, don\'t worry! While holding *CTRL* (or *CMD* on Mac), select the *pack.mcmeta* file and the *assets* folder. Then, right-click and choose to compress them into a new `.zip` file. The site sends it in the correct format for you to place directly into your Minecraft resource pack folder, usually at `your-version-folder/minecraft/resourcepacks`.\n\nCreated by 1337rod :)',
+                readme: 'This is a resource pack for Minecraft Java Edition, generated locally to work offline. It replaces all 9 default game skins (including Steve, Alex, Ari, etc.) with your custom skin. Since it modifies local game files, the skin will work perfectly offline or on servers that don\'t load skins, ensuring you can always see your skin, and that all default skins on other players are replaced with yours for you.\\n\\nIf you accidentally unzipped the file, don\'t worry! While holding *CTRL* (or *CMD* on Mac), select the *pack.mcmeta* file and the *assets* folder. Then, right-click and choose to compress them into a new `.zip` file. The site sends it in the correct format for you to place directly into your Minecraft resource pack folder, usually at `your-version-folder/minecraft/resourcepacks`.\\n\\nCreated by 1337rod :)',
                 mcmetaDesc: 'Locally generated skin pack to replace default Minecraft skins. Works offline.',
                 kofiLink: 'Support on Ko-fi',
                 toggleBtnText: 'Show Details',
@@ -424,7 +401,7 @@
                 fileNamePrefix: 'Archivo cargado: ',
                 alertWrongFormat: 'La imagen debe tener 64×64 píxeles.',
                 alertSelectPng: 'Por favor, selecciona un archivo PNG.',
-                readme: 'Este es un paquete de recursos para Minecraft Java Edition, generado localmente para funcionar sin conexión. Reemplaza las 9 skins predeterminadas del juego (incluyendo a Steve, Alex, Ari, etc.) con tu skin personalizada. Como modifica los archivos locales del juego, la skin funcionará perfectamente sin conexión o en servidores que no cargan skins, asegurando que siempre puedas ver tu skin y que otros jugadores que usen una de las skins predeterminadas vean la tuya.\n\nSi descomprimiste el archivo por accidente, ¡no te preocupes! Mientras mantienes presionado *CTRL* (o *CMD* en Mac), selecciona el archivo *pack.mcmeta* y la carpeta *assets*. Luego, haz clic derecho y elige comprimirlos en un nuevo archivo `.zip`. El sitio lo envía en el formato correcto para que lo coloques directamente en la carpeta de paquetes de recursos de tu Minecraft, generalmente en `tu-carpeta-de-version/minecraft/resourcepacks`.\n\nCriado por 1337rod :)',
+                readme: 'Este es un paquete de recursos para Minecraft Java Edition, generado localmente para funcionar sin conexión. Reemplaza las 9 skins predeterminadas del juego (incluyendo a Steve, Alex, Ari, etc.) con tu skin personalizada. Como modifica los archivos locales del juego, la skin funcionará perfectamente sin conexión o en servidores que no cargan skins, asegurando que siempre puedas ver tu skin, y que las skins predeterminadas de otros jugadores se reemplacen por la tuya para ti.\\n\\nSi descomprimiste el archivo por accidente, ¡no te preocupes! Mientras mantienes presionado *CTRL* (o *CMD* en Mac), selecciona el archivo *pack.mcmeta* y la carpeta *assets*. Luego, haz clic derecho y elige comprimirlos en un nuevo archivo `.zip`. El sitio lo envía en el formato correcto para que lo coloques directamente en la carpeta de paquetes de recursos de tu Minecraft, generalmente en `tu-carpeta-de-version/minecraft/resourcepacks`.\\n\\nCriado por 1337rod :)',
                 mcmetaDesc: 'Paquete de skins generado localmente para reemplazar las skins predeterminadas de Minecraft. Funciona sin conexión.',
                 kofiLink: 'Apoya en Ko-fi',
                 toggleBtnText: 'Mostrar Detalhes',
@@ -560,7 +537,7 @@
                 const zip = new JSZip();
                 const packFolder = zip.folder("skin_pack");
                 
-                packFolder.file("README.txt", readmeContent);
+                packFolder.file("README.txt", readmeContent.replace(/\\n/g, '\n'));
                 packFolder.file("pack.mcmeta", JSON.stringify({
                     pack: { pack_format: 14, description: [{ text: mcmetaDesc }] }
                 }, null, 2));
