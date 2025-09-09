@@ -1,0 +1,19 @@
+{
+  "name": "offline-minecraft-skin-converter",
+  "version": "1.0.0",
+  "description": "A tool that converts a 64x64 Minecraft skin into a resource pack to replace the default game skins.",
+  "scripts": {
+    "deploy": "gh-pages -d ."
+  },
+  "keywords": [
+    "minecraft",
+    "skin",
+    "resource-pack",
+    "offline"
+  ],
+  "author": "1337rod",
+  "license": "ISC",
+  "dependencies": {
+    "gh-pages": "^6.1.1"
+  }
+}

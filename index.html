@@ -1,0 +1,665 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Offline Minecraft Skin Converter | Crie seu Resource Pack</title>
+    <meta name="description" content="Converta sua skin de Minecraft em um Resource Pack offline. Suporte para skins de 64x64. Processamento 100% local e seguro.">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        :root { --radius:12px; --transition:.3s ease; }
+        @media (prefers-color-scheme: light) {
+            :root{
+                --bg: #f9f9f9; --card:#fff; --border:#e0e0e0; --text:#222; --sub:#666;
+                --accent:#4caf50; --accentHover:#43a047; --danger:#f44336; --dangerHover:#d32f2f;
+            }
+        }
+        @media (prefers-color-scheme: dark) {
+            :root{
+                --bg:#121212; --card:#1e1e1e; --border:#333; --text:#eee; --sub:#aaa;
+                --accent:#81c784; --accentHover:#66bb6a; --danger:#ef5350; --dangerHover:#e53935;
+            }
+        }
+        *{box-sizing:border-box}
+        body{
+            font-family:'Roboto',sans-serif;
+            background:var(--bg); color:var(--text); margin:0;
+            display:flex; align-items:center; justify-content:center; min-height:100vh;
+            transition:background var(--transition),color var(--transition);
+        }
+        .container{width:100%;max-width:480px;padding:24px;display:flex;flex-direction:column;gap:24px;}
+        .card{
+            background:var(--card); border:1px solid var(--border); border-radius:var(--radius);
+            padding:24px; box-shadow:0 6px 16px rgba(0,0,0,0.15); transition:box-shadow var(--transition),transform var(--transition);
+        }
+        .card:hover{transform:translateY(-2px);box-shadow:0 8px 20px rgba(0,0,0,0.25);}
+        h1{font-size:22px;margin:0 0 8px;text-align:center;font-weight:500}
+        #drop-area{
+            border:2px dashed var(--border); border-radius:var(--radius); padding:40px 20px; text-align:center; cursor:pointer;
+            transition:all var(--transition); background:transparent;
+        }
+        #drop-area:hover,#drop-area.highlight{border-color:var(--accent); background:rgba(76,175,80,0.05)}
+        .btn{padding:12px 20px;border-radius:var(--radius);border:none;cursor:pointer;font-weight:500;transition:transform var(--transition),box-shadow var(--transition)}
+        .btn:hover{transform:translateY(-2px);box-shadow:0 4px 8px rgba(0,0,0,0.2)}
+        .btn-primary{background:var(--accent);color:#fff}
+        .btn-primary:hover{background:var(--accentHover)}
+        .btn-remove{background:var(--danger);color:#fff}
+        .btn-remove:hover{background:var(--dangerHover)}
+        .info-text{font-size:12px;color:var(--sub);text-align:center}
+        .loaded-info{display:flex;flex-direction:column;align-items:center;gap:12px;text-align:center}
+        .file-name{font-size:14px;font-weight:500}
+        #preview{width:128px;height:128px;image-rendering:pixelated;border-radius:var(--radius);border:1px solid var(--border);background:transparent}
+        #success-message{font-size:16px;font-weight:500;color:var(--accent);text-align:center;animation:fadeIn .4s ease}
+        @keyframes fadeIn{from{opacity:0;transform:translateY:8px}to{opacity:1;transform:translateY(0)}}
+        .info-box{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:16px}
+        .info-box h2{margin:0 0 8px;font-size:15px;font-weight:500;text-align:center;}
+        .info-box p,.info-box ul,pre{margin:0;font-size:13px;color:var(--sub)}
+        pre{font-family:monospace;background:rgba(0,0,0,0.04);padding:8px;border-radius:8px;overflow:auto}
+        #fileElem{display:none}
+        .lang-selector {
+            margin-bottom: 12px;
+            display: flex;
+            justify-content: flex-end;
+        }
+        .lang-selector select {
+            padding: 6px 10px;
+            border-radius: var(--radius);
+            border: 1px solid var(--border);
+            background: var(--card);
+            color: var(--text);
+        }
+        /* Estilos do botão Ko-fi customizado */
+        .kofi-btn {
+            background-color: #FF6333;
+            color: #fff;
+            border-radius: 50px;
+            display: inline-flex;
+            align-items: center;
+            padding: 6px 12px;
+            text-decoration: none;
+            gap: 8px;
+            font-size: 16px;
+            font-weight: 500;
+            transition: transform var(--transition), box-shadow var(--transition);
+            margin-top: 12px;
+        }
+        .kofi-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+        .kofi-btn img {
+            height: 24px;
+            border: none;
+            vertical-align: middle;
+        }
+        /* Estilos para o Easter Egg */
+        .easter-egg-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.9);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            backdrop-filter: blur(5px);
+        }
+        .easter-egg-content {
+            position: relative;
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 0;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
+            max-width: 90%;
+            width: 560px;
+            aspect-ratio: 16/9;
+            overflow: hidden;
+        }
+        #easter-egg-player {
+            width: 100%;
+            height: 100%;
+            border: none;
+            border-radius: var(--radius);
+        }
+        .easter-egg-close {
+            position: absolute;
+            top: 0px;
+            right: 0px;
+            background: rgba(0, 0, 0, 0.5);
+            color: #fff;
+            border: none;
+            padding: 0;
+            width: 30px;
+            height: 30px;
+            font-size: 20px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1001;
+            transition: background 0.2s ease, color 0.2s ease;
+            border-bottom-left-radius: var(--radius);
+        }
+        .easter-egg-close:hover {
+            background: var(--danger);
+            color: #fff;
+        }
+        /* Estilos do Modal de Privacidade */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.7);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 2000;
+        }
+        .modal-content {
+            background: var(--card);
+            color: var(--text);
+            padding: 30px;
+            border-radius: var(--radius);
+            max-width: 500px;
+            width: 90%;
+            position: relative;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+        }
+        .modal-content h2 {
+            margin-top: 0;
+            text-align: center;
+        }
+        .modal-close-btn {
+            position: absolute;
+            top: 10px;
+            right: 15px;
+            font-size: 30px;
+            background: transparent;
+            border: none;
+            color: var(--sub);
+            cursor: pointer;
+        }
+        /* Estilos para a nova funcionalidade de esconder/exibir */
+        .details-container {
+            display: none; /* Inicia oculto */
+            flex-direction: column;
+            gap: 24px;
+        }
+        .toggle-btn-container {
+            text-align: center;
+        }
+        .toggle-btn {
+            background: var(--card);
+            color: var(--text);
+            border: 1px solid var(--border);
+            padding: 12px 20px;
+            border-radius: var(--radius);
+            cursor: pointer;
+            font-weight: 500;
+            transition: transform var(--transition), box-shadow var(--transition), background var(--transition);
+        }
+        .toggle-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            background: var(--border);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="card main-card">
+            <div class="lang-selector">
+                <select id="lang-select">
+                    <option value="pt-br">🇧🇷 Português</option>
+                    <option value="en">🇺🇸 English</option>
+                    <option value="es">🇪🇸 Español</option>
+                </select>
+            </div>
+            <div id="drop-area" tabindex="0" role="button" aria-label="Arraste e solte sua skin (.png)">
+                <p id="drop-text">Arraste e solte sua skin (.png)</p>
+                <p class="info-text" id="format-text">formato: 64×64</p>
+            </div>
+            <input type="file" id="fileElem" accept="image/png">
+            <div id="loaded-state" style="display:none;">
+                <div class="loaded-info">
+                    <img id="preview" alt="Skin Preview">
+                    <p class="file-name" id="file-name-display"></p>
+                    <div style="display:flex;gap:8px">
+                        <button id="remove-button" class="btn btn-remove">✕ <span id="remove-text">Remover</span></button>
+                        <button id="download-button" class="btn btn-primary"><span id="download-text">Baixar .zip</span></button>
+                    </div>
+                </div>
+            </div>
+            <div id="success-message" style="display:none;">
+                <p id="success-text">Pacote de skins baixado com sucesso!</p>
+            </div>
+        </div>
+
+        <div class="info-box" style="text-align: center;">
+            <h2 id="credits-title">Créditos</h2>
+            <p class="info-text">
+                Powered by JSZip | 
+                <a href="#" id="privacy-link">Privacidade e Termos</a>
+            </p>
+            <a href="https://ko-fi.com/V7V61KZ9FL" target="_blank" rel="noopener noreferrer" class="kofi-btn">
+                <img src="https://storage.ko-fi.com/cdn/kofi6.png?v=6" alt="Buy Me a Coffee at ko-fi.com" />
+                <span></span>
+            </a>
+        </div>
+        
+        <div class="toggle-btn-container">
+            <button id="toggle-details-btn" class="toggle-btn">Ver Detalhes</button>
+        </div>
+
+        <div id="details-container" class="details-container">
+            <div class="info-box">
+                <h2 id="how-to-title">Como Usar</h2>
+                <ul id="how-to-list">
+                    <li>Baixe o .zip e ative como resource pack no jogo.</li>
+                    <li>Todas as skins padrão do jogo serão substituídas pela sua, permitindo que você as veja offline.</li>
+                </ul>
+            </div>
+            <div class="info-box">
+                <h2 id="zip-structure-title">Estrutura do ZIP</h2>
+                <pre><code id="zip-structure-code"></code></pre>
+            </div>
+        </div>
+
+    </div>
+    <div class="easter-egg-overlay" id="easter-egg-overlay">
+        <div class="easter-egg-content">
+            <button class="easter-egg-close" id="easter-egg-close">✕</button>
+            <div id="easter-egg-player"></div>
+        </div>
+    </div>
+    <div id="privacy-modal" class="modal-overlay">
+        <div class="modal-content">
+            <button class="modal-close-btn">&times;</button>
+            <h2 id="privacy-title">Política de Privacidade e Termos de Serviço</h2>
+            <p id="privacy-text-1">Este site não coleta, armazena ou processa qualquer dado pessoal. Todo o processamento da sua skin é feito diretamente no seu navegador.</p>
+            <p id="privacy-text-2">Os arquivos gerados ficam apenas no seu computador e não são enviados para a internet.</p>
+            <p id="privacy-text-3">O uso da ferramenta é inteiramente gratuito e não requer conta ou login.</p>
+        </div>
+    </div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+    <script>
+        const langSelect = document.getElementById('lang-select');
+        const dropArea = document.getElementById('drop-area');
+        const fileElem = document.getElementById('fileElem');
+        const loadedState = document.getElementById('loaded-state');
+        const fileNameDisplay = document.getElementById('file-name-display');
+        const preview = document.getElementById('preview');
+        const removeButton = document.getElementById('remove-button');
+        const downloadButton = document.getElementById('download-button');
+        const successMessage = document.getElementById('success-message');
+        const toggleDetailsBtn = document.getElementById('toggle-details-btn');
+        const detailsContainer = document.getElementById('details-container');
+        let skinFile = null;
+        const allNames = ["Steve", "Alex", "Ari", "Kai", "Noor", "Sunny", "Zuri", "Efe", "Makena"];
+        
+        const translations = {
+            'pt-br': {
+                h1: 'Offline Skin Converter',
+                dropText: 'Arraste e solte sua skin (.png)',
+                formatText: 'formato: 64×64',
+                removeText: 'Remover',
+                downloadText: 'Baixar .zip',
+                successText: 'Pacote de skins baixado com sucesso!',
+                howToTitle: 'Como Usar',
+                howToList: [
+                    'Baixe o .zip e ative como resource pack no jogo.',
+                    'Todas as skins padrão do jogo serão substituídas pela sua, permitindo que você as veja offline.'
+                ],
+                zipStructureTitle: 'Estrutura do ZIP',
+                zipStructureText: `skin_pack/
+  pack.mcmeta
+  README.txt
+  assets/minecraft/textures/entity/
+    ├ steve.png
+    ├ alex.png
+    ├ ... (todas as 9 skins padrão)
+    ├ player/
+      ├ wide/
+        ├ steve.png
+        ├ ...
+      └ slim/
+        ├ alex.png
+        ├ ...`,
+                creditsTitle: 'Créditos',
+                fileNamePrefix: 'Arquivo carregado: ',
+                alertWrongFormat: 'A imagem precisa ter 64×64 pixels.',
+                alertSelectPng: 'Por favor, selecione um arquivo PNG.',
+                readme: 'Este pacote é um recurso para o Minecraft Java Edition, gerado localmente para funcionar offline. Ele substitui todas as 9 skins padrão do jogo (incluindo Steve, Alex, Ari, etc.) pela sua skin personalizada. Como ele modifica os arquivos locais do jogo, a skin funcionará perfeitamente offline ou em servidores que não carregam skins, garantindo que você sempre possa ver sua skin e que outros jogadores que usam uma das skins padrão vejam a sua.\n\nSe você descompactou o arquivo por engano, não se preocupe! Com o *CTRL* pressionado (ou *CMD* no Mac), selecione o arquivo *pack.mcmeta* e a pasta *assets*. Depois, clique com o botão direito para compactar em um novo arquivo `.zip`. O site já manda no formato certo para ser usado diretamente na pasta de recursos do seu Minecraft, geralmente em `versãodoseumine/minecraft/resourcepacks`.\n\nCriado pelo 1337rod :)',
+                mcmetaDesc: 'Pacote de skins gerado localmente para substituir as skins padrão do Minecraft. Funciona offline.',
+                kofiLink: 'Apoie no Ko-fi',
+                toggleBtnText: 'Ver Detalhes',
+                toggleBtnTextAlt: 'Ocultar Detalhes',
+                privacyTitle: 'Política de Privacidade e Termos de Serviço',
+                privacyText1: 'Este site não coleta, armazena ou processa qualquer dado pessoal. Todo o processamento da sua skin é feito diretamente no seu navegador.',
+                privacyText2: 'Os arquivos gerados ficam apenas no seu computador e não são enviados para a internet.',
+                privacyText3: 'O uso da ferramenta é inteiramente gratuito e não requer conta ou login.'
+            },
+            'en': {
+                h1: 'Offline Skin Converter',
+                dropText: 'Drag and drop your skin (.png)',
+                formatText: 'format: 64×64',
+                removeText: 'Remove',
+                downloadText: 'Download .zip',
+                successText: 'Skin pack downloaded successfully!',
+                howToTitle: 'How to Use',
+                howToList: [
+                    'Download the .zip and activate it as a resource pack in the game.',
+                    'All default game skins will be replaced with your skin, allowing you to see it offline.'
+                ],
+                zipStructureTitle: 'ZIP Structure',
+                zipStructureText: `skin_pack/
+  pack.mcmeta
+  README.txt
+  assets/minecraft/textures/entity/
+    ├ steve.png
+    ├ alex.png
+    ├ ... (all 9 default skins)
+    ├ player/
+      ├ wide/
+        ├ steve.png
+        ├ ...
+      └ slim/
+        ├ alex.png
+        ├ ...`,
+                creditsTitle: 'Credits',
+                fileNamePrefix: 'File loaded: ',
+                alertWrongFormat: 'The image needs to be 64×64 pixels.',
+                alertSelectPng: 'Please select a PNG file.',
+                readme: 'This is a resource pack for Minecraft Java Edition, generated locally to work offline. It replaces all 9 default game skins (including Steve, Alex, Ari, etc.) with your custom skin. Since it modifies local game files, the skin will work perfectly offline or on servers that don\'t load skins, ensuring you can always see your skin and that other players using one of the default skins see yours.\n\nIf you accidentally unzipped the file, don\'t worry! While holding *CTRL* (or *CMD* on Mac), select the *pack.mcmeta* file and the *assets* folder. Then, right-click and choose to compress them into a new `.zip` file. The site sends it in the correct format for you to place directly into your Minecraft resource pack folder, usually at `your-version-folder/minecraft/resourcepacks`.\n\nCreated by 1337rod :)',
+                mcmetaDesc: 'Locally generated skin pack to replace default Minecraft skins. Works offline.',
+                kofiLink: 'Support on Ko-fi',
+                toggleBtnText: 'Show Details',
+                toggleBtnTextAlt: 'Hide Details',
+                privacyTitle: 'Privacy Policy and Terms of Service',
+                privacyText1: 'This website does not collect, store, or process any personal data. All skin processing is done directly in your browser.',
+                privacyText2: 'The generated files remain only on your computer and are not sent to the internet.',
+                privacyText3: 'The use of the tool is completely free and does not require an account or login.'
+            },
+            'es': {
+                h1: 'Convertidor de Skins Offline',
+                dropText: 'Arrastra y suelta tu skin (.png)',
+                formatText: 'formato: 64×64',
+                removeText: 'Remover',
+                downloadText: 'Descargar .zip',
+                successText: '¡Paquete de skins descargado con éxito!',
+                howToTitle: 'Cómo Usar',
+                howToList: [
+                    'Descarga el .zip y actívalo como un paquete de recursos en el juego.',
+                    'Todas las skins predeterminadas del juego serán reemplazadas por la tuya, lo que te permitirá verla sin conexión.'
+                ],
+                zipStructureTitle: 'Estructura del ZIP',
+                zipStructureText: `skin_pack/
+  pack.mcmeta
+  README.txt
+  assets/minecraft/textures/entity/
+    ├ steve.png
+    ├ alex.png
+    ├ ... (todas las 9 skins predeterminadas)
+    ├ player/
+      ├ wide/
+        ├ steve.png
+        ├ ...
+      └ slim/
+        ├ alex.png
+        ├ ...`,
+                creditsTitle: 'Créditos',
+                fileNamePrefix: 'Archivo cargado: ',
+                alertWrongFormat: 'La imagen debe tener 64×64 píxeles.',
+                alertSelectPng: 'Por favor, selecciona un archivo PNG.',
+                readme: 'Este es un paquete de recursos para Minecraft Java Edition, generado localmente para funcionar sin conexión. Reemplaza las 9 skins predeterminadas del juego (incluyendo a Steve, Alex, Ari, etc.) con tu skin personalizada. Como modifica los archivos locales del juego, la skin funcionará perfectamente sin conexión o en servidores que no cargan skins, asegurando que siempre puedas ver tu skin y que otros jugadores que usen una de las skins predeterminadas vean la tuya.\n\nSi descomprimiste el archivo por accidente, ¡no te preocupes! Mientras mantienes presionado *CTRL* (o *CMD* en Mac), selecciona el archivo *pack.mcmeta* y la carpeta *assets*. Luego, haz clic derecho y elige comprimirlos en un nuevo archivo `.zip`. El sitio lo envía en el formato correcto para que lo coloques directamente en la carpeta de paquetes de recursos de tu Minecraft, generalmente en `tu-carpeta-de-version/minecraft/resourcepacks`.\n\nCriado por 1337rod :)',
+                mcmetaDesc: 'Paquete de skins generado localmente para reemplazar las skins predeterminadas de Minecraft. Funciona sin conexión.',
+                kofiLink: 'Apoya en Ko-fi',
+                toggleBtnText: 'Mostrar Detalhes',
+                toggleBtnTextAlt: 'Ocultar Detalhes',
+                privacyTitle: 'Política de Privacidad y Términos de Servicio',
+                privacyText1: 'Este sitio no recopila, almacena ni procesa ningún dato personal. Todo o processamento de sua skin se realiza diretamente em seu navegador.',
+                privacyText2: 'Os arquivos gerados permanecem apenas em seu computador e não são enviados para a Internet.',
+                privacyText3: 'O uso da ferramenta é completamente gratuito e não requer uma conta ou início de sessão.'
+            }
+        };
+        
+        let currentFileName = ''; 
+        const mainTitleElement = document.getElementById('main-title');
+        const privacyTitleElement = document.getElementById('privacy-title');
+        const privacyText1Element = document.getElementById('privacy-text-1');
+        const privacyText2Element = document.getElementById('privacy-text-2');
+        const privacyText3Element = document.getElementById('privacy-text-3');
+
+        function updateText(lang) {
+            const texts = translations[lang];
+            dropArea.querySelector('#drop-text').textContent = texts.dropText;
+            dropArea.querySelector('#format-text').textContent = texts.formatText;
+            removeButton.querySelector('#remove-text').textContent = texts.removeText;
+            downloadButton.querySelector('#download-text').textContent = texts.downloadText;
+            successMessage.querySelector('#success-text').textContent = texts.successText;
+            document.getElementById('how-to-title').textContent = texts.howToTitle;
+            document.getElementById('zip-structure-title').textContent = texts.zipStructureTitle;
+            document.getElementById('credits-title').textContent = texts.creditsTitle;
+            privacyTitleElement.textContent = texts.privacyTitle;
+            privacyText1Element.textContent = texts.privacyText1;
+            privacyText2Element.textContent = texts.privacyText2;
+            privacyText3Element.textContent = texts.privacyText3;
+            toggleDetailsBtn.textContent = detailsContainer.style.display === 'flex' ? texts.toggleBtnTextAlt : texts.toggleBtnText;
+            
+            const howToList = document.getElementById('how-to-list');
+            howToList.innerHTML = '';
+            texts.howToList.forEach(item => {
+                const li = document.createElement('li');
+                li.textContent = item;
+                howToList.appendChild(li);
+            });
+
+            document.getElementById('zip-structure-code').textContent = texts.zipStructureText;
+
+            if (skinFile) {
+                fileNameDisplay.textContent = currentFileName;
+            } else {
+                fileNameDisplay.textContent = '';
+            }
+        }
+        
+        langSelect.addEventListener('change', (event) => {
+            updateText(event.target.value);
+        });
+        
+        updateText(langSelect.value);
+
+        toggleDetailsBtn.addEventListener('click', () => {
+            const isVisible = detailsContainer.style.display === 'flex';
+            detailsContainer.style.display = isVisible ? 'none' : 'flex';
+            toggleDetailsBtn.textContent = isVisible ? translations[langSelect.value].toggleBtnText : translations[langSelect.value].toggleBtnTextAlt;
+        });
+
+        function showState(state) {
+            dropArea.style.display = state === "drop" ? "block" : "none";
+            loadedState.style.display = state === "loaded" ? "block" : "none";
+            successMessage.style.display = state === "success" ? "block" : "none";
+            if (state === "drop") {
+                fileElem.value = "";
+                preview.src = "";
+                fileNameDisplay.textContent = "";
+                skinFile = null;
+                currentFileName = '';
+            }
+        }
+        
+        ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(ev => {
+            dropArea.addEventListener(ev, e => { e.preventDefault(); e.stopPropagation(); });
+        });
+        ['dragenter', 'dragover'].forEach(ev => dropArea.addEventListener(ev, () => dropArea.classList.add('highlight')));
+        ['dragleave', 'drop'].forEach(ev => dropArea.addEventListener(ev, () => dropArea.classList.remove('highlight')));
+        dropArea.addEventListener('drop', e => handleFile(e.dataTransfer.files[0]));
+        dropArea.addEventListener('click', () => fileElem.click());
+        fileElem.addEventListener('change', e => handleFile(e.target.files[0]));
+        removeButton.addEventListener('click', () => {
+            skinFile = null;
+            showState("drop");
+            updateText(langSelect.value);
+        });
+        downloadButton.addEventListener('click', async () => {
+            if (skinFile) {
+                downloadButton.disabled = true;
+                await processSkinAndCreateZip();
+                downloadButton.disabled = false;
+            }
+        });
+        function handleFile(file) {
+            const currentLangTexts = translations[langSelect.value];
+            if (!file || file.type !== "image/png") {
+                alert(currentLangTexts.alertSelectPng);
+                return;
+            }
+            const reader = new FileReader();
+            reader.onload = e => {
+                const img = new Image();
+                img.onload = () => {
+                    if (img.width === 64 && img.height === 64) {
+                        skinFile = file;
+                        currentFileName = skinFile.name;
+                        fileNameDisplay.textContent = currentLangTexts.fileNamePrefix + currentFileName;
+                        preview.src = e.target.result;
+                        showState("loaded");
+                    } else {
+                        alert(currentLangTexts.alertWrongFormat);
+                        fileElem.value = "";
+                    }
+                };
+                img.src = e.target.result;
+            };
+            reader.readAsDataURL(file);
+        }
+        async function processSkinAndCreateZip() {
+            const reader = new FileReader();
+            reader.readAsDataURL(skinFile);
+            reader.onload = async e => {
+                const base64Data = e.target.result.replace(/^data:image\/png;base64,/, "");
+                const lang = langSelect.value;
+                const readmeContent = translations[lang].readme;
+                const mcmetaDesc = translations[lang].mcmetaDesc;
+                const zip = new JSZip();
+                const packFolder = zip.folder("skin_pack");
+                
+                packFolder.file("README.txt", readmeContent);
+                packFolder.file("pack.mcmeta", JSON.stringify({
+                    pack: { pack_format: 14, description: [{ text: mcmetaDesc }] }
+                }, null, 2));
+                
+                const entityFolder = packFolder.folder("assets/minecraft/textures/entity");
+                const slimFolder = entityFolder.folder("player/slim");
+                const wideFolder = entityFolder.folder("player/wide");
+                allNames.forEach(name => {
+                    const fileName = name.toLowerCase() + ".png";
+                    entityFolder.file(fileName, base64Data, { base64: true });
+                    slimFolder.file(fileName, base64Data, { base64: true });
+                    wideFolder.file(fileName, base64Data, { base64: true });
+                });
+                const content = await zip.generateAsync({ type: "blob" });
+                const url = URL.createObjectURL(content);
+                const a = document.createElement("a");
+                a.href = url;
+                a.download = "skin_pack.zip";
+                document.body.appendChild(a);
+                a.click();
+                a.remove();
+                URL.revokeObjectURL(url);
+                showState("success");
+                setTimeout(() => showState("drop"), 3000);
+            };
+        }
+
+        // Lógica do Easter Egg
+        const easterEggOverlay = document.getElementById('easter-egg-overlay');
+        const easterEggCloseButton = document.getElementById('easter-egg-close');
+        let easterEggActive = false;
+        let sequence = '';
+
+        var tag = document.createElement('script');
+        tag.src = "https://www.youtube.com/iframe_api";
+        var firstScriptTag = document.getElementsByTagName('script')[0];
+        firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
+
+        let player;
+        function onYouTubeIframeAPIReady() {
+            player = new YT.Player('easter-egg-player', {
+                videoId: 'VqAGrH-qVwE',
+                playerVars: {
+                    'autoplay': 1,
+                    'rel': 0,
+                    'showinfo': 0,
+                    'modestbranding': 1
+                },
+                events: {
+                    'onReady': onPlayerReady,
+                    'onStateChange': onPlayerStateChange
+                }
+            });
+        }
+
+        function onPlayerReady(event) {
+            // Nada a fazer quando o player estiver pronto
+        }
+
+        function onPlayerStateChange(event) {
+            // Se o vídeo terminar (estado 0), fecha a sobreposição
+            if (event.data === YT.PlayerState.ENDED) {
+                closeEasterEgg();
+            }
+        }
+
+        document.addEventListener('keydown', (e) => {
+            if (easterEggActive) return;
+
+            const key = e.key;
+            if (key === '1' || key === '3' || key === '7') {
+                sequence += key;
+                if (sequence.includes('1337')) {
+                    easterEggOverlay.style.display = 'flex';
+                    easterEggActive = true;
+                    sequence = '';
+                }
+            } else {
+                sequence = '';
+            }
+        });
+
+        easterEggCloseButton.addEventListener('click', () => {
+            closeEasterEgg();
+        });
+
+        function closeEasterEgg() {
+            easterEggOverlay.style.display = 'none';
+            player.stopVideo();
+            easterEggActive = false;
+        }
+        
+        // JavaScript do Modal de Privacidade
+        const privacyModal = document.getElementById('privacy-modal');
+        const privacyLink = document.getElementById('privacy-link');
+        const modalCloseBtn = document.querySelector('.modal-close-btn');
+
+        privacyLink.addEventListener('click', (e) => {
+            e.preventDefault();
+            privacyModal.style.display = 'flex';
+        });
+
+        modalCloseBtn.addEventListener('click', () => {
+            privacyModal.style.display = 'none';
+        });
+
+        window.addEventListener('click', (e) => {
+            if (e.target === privacyModal) {
+                privacyModal.style.display = 'none';
+            }
+        });
+    </script>
+</body>
+</html>

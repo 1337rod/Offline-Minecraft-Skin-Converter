@@ -1,0 +1,6 @@
+# Ignorar a pasta de módulos
+node_modules/
+
+# Ignorar o diretório do gh-pages
+.cache/
+.github/
