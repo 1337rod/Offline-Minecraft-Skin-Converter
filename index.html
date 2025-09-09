@@ -247,7 +247,7 @@
             </p>
             <a href="https://ko-fi.com/V7V61KZ9FL" target="_blank" rel="noopener noreferrer" class="kofi-btn">
                 <img src="https://storage.ko-fi.com/cdn/kofi6.png?v=6" alt="Buy Me a Coffee at ko-fi.com" />
-                <span></span>
+                <span>Buy me a coffee</span>
             </a>
         </div>
         
@@ -421,7 +421,7 @@
                 toggleBtnText: 'Mostrar Detalhes',
                 toggleBtnTextAlt: 'Ocultar Detalhes',
                 privacyTitle: 'Política de Privacidad y Términos de Servicio',
-                privacyText1: 'Este sitio no recopila, almacena ni procesa ningún dato personal. Todo o processamento de sua skin se realiza diretamente em seu navegador.',
+                privacyText1: 'Este sitio no recopila, armazena ni processa nenhum dado pessoal. Todo o processamento de sua skin se realiza diretamente em seu navegador.',
                 privacyText2: 'Os arquivos gerados permanecem apenas em seu computador e não são enviados para a Internet.',
                 privacyText3: 'O uso da ferramenta é completamente gratuito e não requer uma conta ou início de sessão.'
             }
@@ -580,32 +580,47 @@
         const easterEggOverlay = document.getElementById('easter-egg-overlay');
         const easterEggCloseButton = document.getElementById('easter-egg-close');
         let easterEggActive = false;
+        let player = null;
         let sequence = '';
 
-        var tag = document.createElement('script');
-        tag.src = "https://www.youtube.com/iframe_api";
-        var firstScriptTag = document.getElementsByTagName('script')[0];
-        firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
-
-        let player;
         function onYouTubeIframeAPIReady() {
-            player = new YT.Player('easter-egg-player', {
-                videoId: 'VqAGrH-qVwE',
-                playerVars: {
-                    'autoplay': 1,
-                    'rel': 0,
-                    'showinfo': 0,
-                    'modestbranding': 1
-                },
-                events: {
-                    'onReady': onPlayerReady,
-                    'onStateChange': onPlayerStateChange
-                }
-            });
+            // A API já está carregada, mas o player só será criado quando necessário
         }
 
+        document.addEventListener('keydown', (e) => {
+            if (easterEggActive) return;
+            const key = e.key;
+            if (key === '1' || key === '3' || key === '7') {
+                sequence += key;
+                if (sequence.includes('1337')) {
+                    easterEggOverlay.style.display = 'flex';
+                    easterEggActive = true;
+                    sequence = '';
+                    if (!player) {
+                        player = new YT.Player('easter-egg-player', {
+                            videoId: 'VqAGrH-qVwE',
+                            playerVars: {
+                                'autoplay': 1,
+                                'rel': 0,
+                                'showinfo': 0,
+                                'modestbranding': 1
+                            },
+                            events: {
+                                'onReady': onPlayerReady,
+                                'onStateChange': onPlayerStateChange
+                            }
+                        });
+                    } else {
+                        player.playVideo();
+                    }
+                }
+            } else {
+                sequence = '';
+            }
+        });
+
         function onPlayerReady(event) {
-            // Nada a fazer quando o player estiver pronto
+            // O vídeo começa a tocar automaticamente devido ao `autoplay: 1`
         }
 
         function onPlayerStateChange(event) {
@@ -615,31 +630,23 @@
             }
         }
 
-        document.addEventListener('keydown', (e) => {
-            if (easterEggActive) return;
-
-            const key = e.key;
-            if (key === '1' || key === '3' || key === '7') {
-                sequence += key;
-                if (sequence.includes('1337')) {
-                    easterEggOverlay.style.display = 'flex';
-                    easterEggActive = true;
-                    sequence = '';
-                }
-            } else {
-                sequence = '';
-            }
-        });
-
         easterEggCloseButton.addEventListener('click', () => {
             closeEasterEgg();
         });
 
         function closeEasterEgg() {
             easterEggOverlay.style.display = 'none';
-            player.stopVideo();
+            if (player) {
+                player.stopVideo();
+            }
             easterEggActive = false;
         }
+
+        // Carrega a API do YouTube
+        var tag = document.createElement('script');
+        tag.src = "https://www.youtube.com/iframe_api";
+        var firstScriptTag = document.getElementsByTagName('script')[0];
+        firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
         
         // JavaScript do Modal de Privacidade
         const privacyModal = document.getElementById('privacy-modal');
