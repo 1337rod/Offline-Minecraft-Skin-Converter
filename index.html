@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="pt-br">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <title>Minecraft Skin to Resource Pack Converter - Replaces Default Skins</title>
@@ -58,7 +58,8 @@
         .lang-selector {
             margin-bottom: 12px;
             display: flex;
-            justify-content: flex-end;
+            justify-content: space-between;
+            align-items: center;
         }
         .lang-selector select {
             padding: 6px 10px;
@@ -80,7 +81,6 @@
             font-size: 16px;
             font-weight: 500;
             transition: transform var(--transition), box-shadow var(--transition);
-            margin-top: 12px;
         }
         .kofi-btn:hover {
             transform: translateY(-2px);
@@ -213,9 +213,13 @@
     <div class="container">
         <div class="card main-card">
             <div class="lang-selector">
+                <a href="https://ko-fi.com/V7V61KZ9FL" target="_blank" rel="noopener noreferrer" class="kofi-btn">
+                    <img src="https://storage.ko-fi.com/cdn/kofi6.png?v=6" alt="Buy Me a Coffee at ko-fi.com" />
+                    <span></span>
+                </a>
                 <select id="lang-select">
-                    <option value="pt-br">🇧🇷 Português</option>
                     <option value="en">🇺🇸 English</option>
+                    <option value="pt-br">🇧🇷 Português</option>
                     <option value="es">🇪🇸 Español</option>
                 </select>
             </div>
@@ -238,17 +242,13 @@
                 <p id="success-text">Pacote de skins baixado com sucesso!</p>
             </div>
         </div>
-
+        
         <div class="info-box" style="text-align: center;">
             <h2 id="credits-title">Créditos</h2>
             <p class="info-text">
                 Powered by JSZip | 
                 <a href="#" id="privacy-link">Privacidade e Termos</a>
             </p>
-            <a href="https://ko-fi.com/V7V61KZ9FL" target="_blank" rel="noopener noreferrer" class="kofi-btn">
-                <img src="https://storage.ko-fi.com/cdn/kofi6.png?v=6" alt="Buy Me a Coffee at ko-fi.com" />
-                <span></span>
-            </a>
         </div>
         
         <div class="toggle-btn-container">
@@ -421,7 +421,7 @@
                 toggleBtnText: 'Mostrar Detalhes',
                 toggleBtnTextAlt: 'Ocultar Detalhes',
                 privacyTitle: 'Política de Privacidad y Términos de Servicio',
-                privacyText1: 'Este sitio no recopila, armazena ni processa nenhum dado pessoal. Todo o processamento de sua skin se realiza diretamente em seu navegador.',
+                privacyText1: 'Este sitio no recopila, almacena ni processa nenhum dado pessoal. Todo o processamento de sua skin se realiza directamente em seu navegador.',
                 privacyText2: 'Os arquivos gerados permanecem apenas em seu computador e não são enviados para a Internet.',
                 privacyText3: 'O uso da ferramenta é completamente gratuito e não requer uma conta ou início de sessão.'
             }
@@ -476,7 +476,7 @@
         toggleDetailsBtn.addEventListener('click', () => {
             const isVisible = detailsContainer.style.display === 'flex';
             detailsContainer.style.display = isVisible ? 'none' : 'flex';
-            toggleDetailsBtn.textContent = isVisible ? translations[langSelect.value].toggleBtnText : translations[langSelect.value].toggleBtnTextAlt;
+            toggleDetailsBtn.textContent = isVisible ? translations[langSelect.value].toggleBtnTextAlt : translations[langSelect.value].toggleBtnText;
         });
 
         function showState(state) {
