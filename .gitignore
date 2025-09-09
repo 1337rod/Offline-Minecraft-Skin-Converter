@@ -1,6 +1,6 @@
-# Ignora arquivos de sistema
-.DS_Store
-Thumbs.db
+# Ignorar a pasta de módulos
+node_modules/
 
-# Ignora arquivos de pacote criados pela ferramenta
-*.zip
+# Ignorar o diretório do gh-pages
+.cache/
+.github/
