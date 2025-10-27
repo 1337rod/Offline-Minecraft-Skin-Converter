@@ -1,494 +1,710 @@
 <!DOCTYPE html>
-<html lang="pt-br">
+<html lang="en"> 
 <head>
     <meta charset="UTF-8">
-    <title>Minecraft Skin to Resource Pack Converter - Replaces Default Skins</title>
-    <meta name="description" content="Convert your Minecraft skin into an offline Resource Pack. Supports 64x64 skins. Secure local processing.">
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+    <title>Offline Minecraft Skin Converter - Resource Pack Generator</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <meta name="description" content="Generate your Minecraft Java Edition Resource Pack with your custom PNG skin. Completely offline and with no data submission. Supports all 9 default skins.">
+    <meta name="keywords" content="Minecraft, Skin Converter, Resource Pack Generator, Offline, PNG, Steve, Alex, Ari, Kai, Noor, Sunny, Zuri, Efe, Makena">
+    
+    <meta property="og:title" content="Offline Minecraft Skin Converter">
+    <meta property="og:description" content="Generate your Minecraft Java Edition Resource Pack with your custom PNG skin. Completely offline and with no data submission. Supports all 9 default skins.">
+    <meta property="og:type" content="website">
+    <meta property="og:image" content="https://1337rod.github.io/Offline-Minecraft-Skin-Converter/social_image.png">
+    <meta property="og:url" content="https://1337rod.github.io/Offline-Minecraft-Skin-Converter/">
+
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet"> 
+
     <style>
-        :root { --radius:12px; --transition:.3s ease; }
-        @media (prefers-color-scheme: light) {
-            :root{
-                --bg: #f9f9f9; --card:#fff; --border:#e0e0e0; --text:#222; --sub:#666;
-                --accent:#4caf50; --accentHover:#43a047; --danger:#f44336; --dangerHover:#d32f2f;
-            }
+        /* =======================================================
+           GENERAL CONFIG AND MINECRAFT GUI VARIABLES
+           ======================================================= */
+        
+        @font-face {
+            font-family: 'Minecraft Font';
+            src: url('assets/fonts/minecraft_font.ttf') format('truetype');
+            font-weight: normal;
+            font-style: normal;
         }
+
+        :root { 
+            --radius: 0; 
+            --transition: 0s; 
+            
+            /* Classic GUI Colors (Light Gray) */
+            --mc-window-bg: #C6C6C6; 
+            --mc-text-color: #FFFFFF; 
+            --mc-text-outline: #000000;
+            --mc-highlight-bg: #4C4C4C; 
+            --mc-panel-border-dark: #1E1E1E;
+            --mc-panel-border-light: #FFFFFF;
+            
+            /* Default Button Style */
+            --mc-btn-bg: #A0A0A0;
+            --mc-btn-border-dark: #565656;
+            --mc-btn-border-light: #AAA;
+            --mc-btn-hover-border-dark: #59639A;
+            --mc-btn-hover-border-light: #BDC6FF;
+
+            /* Accent Colors */
+            --mc-accent-color: #00AA00; 
+            /* CORREÇÃO APLICADA AQUI: O vermelho do erro agora é um vermelho mais claro */
+            --mc-danger-color: #FF5454; 
+            
+            /* Stone Texture Base64 */
+            --mc-stone-texture-base64: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUAAAMQAAAAPCAAAAACe4j/AAAAEuElEQVRIx1WWS5Ibuw5EtddrdRRJJE4iSKrb4c2/AUuy30iK+jEBHCTwAICMCgAKiGhKVQUwKzJHQo4mQGBy7AIvk1E2AQKhFt6bUGD1gILy0DkD4dmzACkGyzCScgFgQmLZr4LpQpC56QB2wgSYE8i1fd6xd9xPHIAKwAs14Undx2LIHK0X6vdBbzTa6CNBLQE8Y5rapn7oAl3KSDKC6cLfL6sLnIVG7ffnyUgvQ6rwLjUZdIVqWz0iEXXCZ+TJsV8feUdoPHDk+a/IeAbq0ldLT59jtHweHwmKS6gFSUYCqKcVsPami1pEnqolkCMBiAS87FXTICp03geYUr+TV8un3KuyC0BfTUzihOCdwjUya1bkT1VWe+AaFOoJzHdtERXRe3eulyEDhC6pjYwr+JQuIDU9/0wQBnJEAkd+9i6IRTJrV7YWnGfwLA6ESphkBoCu88M0YH1CTTOiRUpBdwpGnkP5yL9phhwn+QVxDarAXq513y9bLKgxBGR/CjDyMl4ECd6lO82CaMLbEHGHp1R8ePDERj392ssaCOigNjJ+dXXl6OLUFfVx6dA1BFJLlHpkUHPam095C3QJLIjn6OLIOB3xe0JS85Zd+govg1/z/UhtG3RdVW98yxNp5I0Vtf/U+6y/dJ/yHtSK4q7G9ARscC3/Df/kXTwiT3d6ovjEISLJIVEvBwWeCXlALZTbpy85xqGuf3sNiBBUmYjI+BqN6aNQqDWpipSYf3W1nOV/WALoykjIiCPreSn97UigsjZdPA5s3AmCDIxaVO0Fa1fV/qkaiijPPz/bEeRyLSBDI8K8j37TO8aH7vmOqUUQ1DboYhvqd+FlFGEo+2T75MbLGnjvPeu7Pl521Ap14dcR3h7p75qv4xieqnNDoyCPLt/yKkf5gOUXl+6S3d9Syq/982fz+fhpsm28C5EhJcxsWWQke6KoPMA7tqm7kKcrn6FLhWcoqCNCxDPyQ8wEKR73nIlEX8GpARSJX7/rzeNtWPD/Dl2IwtOYMwV7osGsHYJanzeU7KqIZVCTcrT0IEbyD4d1e1dkBtW2qLhLXK7a1ogDqsjI1DR4PY7nHEqfF9tn8HUJL+eQ/lGOXdwI1++57CqgmDaReM9CZYLAk4D4ymqti4KZI9Htz9OnrcuOhCQEqJfXaxHPAFG/l/ee1GFJPXmPryYUiUGPutnRGXkagmnjHk5RNpm7xxiclm6CjJEQ4+MD4xPmuT9Ef4b3YT3B51a7d4Np76PF0cavuC+SoaH6PlilipEakoJBJETWT3k7Hf+1REPj2fIx95t5ct6u9S5v3KM2fv2Ve29ax9yC98zT2IZot61MHyYtdPF92nguZ29xfcVxSu9Nj5Gl8GGwcVoW8n1Q/f6BHFEAyy5R2aRIdYH8XfV4453vHKcnqarXPD6mdrD0rlVV5xBPF2xuJM5Oo0SdaaqGMjJva7ii6bYv74IzPMo5pGebpu72ghypwTR+WWDuhQOkFijGyAzF3GXh11lEH0hkPINZivpTqLEtVm2j1hVcn/S0//q0es5dbyxOErxKivQ+bHotvzcT3/XztPf20XqG6fJZMePT2X6ts+nlm9LoSYHMiHuJjGXniB7v2fo/5qT4nuxYg6AAAAAASUVORK5CYII=);
+        }
+
+        /* DARK MODE (Options GUI) */
         @media (prefers-color-scheme: dark) {
-            :root{
-                --bg:#121212; --card:#1e1e1e; --border:#333; --text:#eee; --sub:#aaa;
-                --accent:#81c784; --accentHover:#66bb6a; --danger:#ef5350; --dangerHover:#e53935;
+            :root {
+                --mc-window-bg: #353535; 
+                --mc-text-color: #E0E0E0; 
+                --mc-btn-bg: #5D5D5D; 
+                --mc-btn-hover-border-dark: #3F476C; 
+                --mc-btn-hover-border-light: #808080;
+                --mc-panel-border-dark: #000000;
+                --mc-panel-border-light: #D0D0D0;
+                --mc-accent-color: #3CB055;
             }
         }
-        *{box-sizing:border-box}
-        body{
-            font-family:'Roboto',sans-serif; background:var(--bg); color:var(--text); margin:0;
-            display:flex; align-items:center; justify-content:center; min-height:100vh;
-            transition:background var(--transition),color var(--transition);
+        
+        /* =======================================================
+           BASE STYLES
+           ======================================================= */
+        * { box-sizing: border-box; }
+        body {
+            font-family: 'Minecraft Font', 'Press Start 2P', monospace;
+            background-color: #1A1A1A; 
+            color: var(--mc-text-color); 
+            margin: 0;
+            display: flex; align-items: center; justify-content: center; min-height: 100vh;
+            text-rendering: optimizeSpeed; 
         }
-        .container{width:100%;max-width:480px;padding:24px;display:flex;flex-direction:column;gap:24px;}
-        .card{
-            background:var(--card); border:1px solid var(--border); border-radius:var(--radius);
-            padding:24px; box-shadow:0 6px 16px rgba(0,0,0,0.15); transition:box-shadow var(--transition),transform var(--transition);
-        }
-        .card:hover{transform:translateY(-2px);box-shadow:0 8px 20px rgba(0,0,0,0.25);}
-        h1{font-size:22px;margin:0 0 8px;text-align:center;font-weight:500}
-        #drop-area{
-            border:2px dashed var(--border); border-radius:var(--radius); padding:40px 20px; text-align:center; cursor:pointer;
-            transition:all var(--transition); background:transparent;
-        }
-        #drop-area:hover,#drop-area.highlight{border-color:var(--accent); background:rgba(76,175,80,0.05)}
-        .btn{padding:12px 20px;border-radius:var(--radius);border:none;cursor:pointer;font-weight:500;transition:transform var(--transition),box-shadow var(--transition)}
-        .btn:hover{transform:translateY(-2px);box-shadow:0 4px 8px rgba(0,0,0,0.2)}
-        .btn-primary{background:var(--accent);color:#fff}
-        .btn-primary:hover{background:var(--accentHover)}
-        .btn-remove{background:var(--danger);color:#fff}
-        .btn-remove:hover{background:var(--dangerHover)}
-        .info-text{font-size:12px;color:var(--sub);text-align:center}
-        .version-text{font-size:12px;color:var(--sub);text-align:center;margin:0;}
-        .loaded-info{display:flex;flex-direction:column;align-items:center;gap:12px;text-align:center}
-        .file-name{font-size:14px;font-weight:500}
-        #preview{width:128px;height:128px;image-rendering:pixelated;border-radius:var(--radius);border:1px solid var(--border);background:transparent}
-        #success-message{font-size:16px;font-weight:500;color:var(--accent);text-align:center;animation:fadeIn .4s ease}
-        @keyframes fadeIn{from{opacity:0;transform:translateY:8px}to{opacity:1;transform:translateY(0)}}
-        .info-box{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:16px}
-        .info-box h2{margin:0 0 8px;font-size:15px;font-weight:500;text-align:center;}
-        .info-box p,.info-box ul,pre{margin:0;font-size:13px;color:var(--sub)}
-        pre{font-family:monospace;background:rgba(0,0,0,0.04);padding:8px;border-radius:8px;overflow:auto}
-        #fileElem{display:none}
-        .lang-selector {
-            margin-bottom: 12px; display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-        .lang-selector select {
-            padding: 6px 10px; border-radius: var(--radius);
-            border: 1px solid var(--border);
-            background: var(--card);
-            color: var(--text);
-        }
-        /* Estilos do botão Ko-fi customizado */
-        .kofi-btn {
-            background-color: #FF6333; color: #fff;
-            border-radius: 50px;
-            display: inline-flex;
-            align-items: center;
-            padding: 10px 20px;
-            text-decoration: none;
-            gap: 8px;
-            font-size: 37px;
-            font-weight: 500; transition: transform var(--transition), box-shadow var(--transition);
-        }
-        .kofi-btn:hover {
-            transform: translateY(-2px); box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-        }
-        .kofi-btn img {
-            height: 27px; border: none;
-            vertical-align: middle;
-        }
-        /* Estilos para o Recurso Secreto */
-        .secret-feature-overlay {
-            position: fixed; top: 0;
-            left: 0;
+        
+        #game-screen-bg {
+            background-image: url('assets/images/dirty_bg.png'); 
+            background-repeat: no-repeat;
+            background-position: center center;
+            background-size: cover;
             width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.9);
-            display: none;
-            align-items: center;
-            justify-content: center; z-index: 1000;
-            backdrop-filter: blur(5px);
+            min-height: 100vh;
+            display: flex; align-items: center; justify-content: center;
         }
-        .secret-feature-content {
-            position: relative; background: var(--card);
-            border: 1px solid var(--border);
-            border-radius: var(--radius);
-            padding: 0;
-            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
-            max-width: 90%; width: 560px;
-            aspect-ratio: 16/9;
-            overflow: hidden;
-        }
-        #secret-feature-player {
-            width: 100%; height: 100%;
-            border: none;
-            border-radius: var(--radius);
-        }
-        .secret-feature-close {
-            position: absolute; top: 0px;
-            right: 0px;
-            background: rgba(0, 0, 0, 0.5);
-            color: #fff;
-            border: none;
-            padding: 0;
-            width: 30px;
-            height: 30px; font-size: 20px;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center; z-index: 1001;
-            transition: background 0.2s ease, color 0.2s ease;
-            border-bottom-left-radius: var(--radius);
-        }
-        .secret-feature-close:hover {
-            background: var(--danger); color: #fff;
-        }
-        /* Estilos do Modal de Privacidade */
-        .modal-overlay {
-            position: fixed; top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0, 0, 0, 0.7);
-            display: none;
-            align-items: center;
-            justify-content: center; z-index: 2000;
-        }
-        .modal-content {
-            background: var(--card); color: var(--text);
-            padding: 30px;
-            border-radius: var(--radius);
+
+        .pixel-text { font-family: 'Minecraft Font', 'Press Start 2P', monospace; }
+        .text-shadow { text-shadow: 2px 2px 0 var(--mc-text-outline); color: var(--mc-text-color); }
+        .text-shadow-large { text-shadow: 4px 4px 0 var(--mc-text-outline); color: var(--mc-text-color); }
+        
+        /* =======================================================
+           MAIN WINDOW (GUI)
+           ======================================================= */
+        #gui-window {
+            width: 95%;
             max-width: 500px;
-            width: 90%;
-            position: relative;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
-        }
-        .modal-content h2 {
-            margin-top: 0; text-align: center;
-        }
-        .modal-close-btn {
-            position: absolute; top: 10px;
-            right: 15px;
-            font-size: 30px;
-            background: transparent;
-            border: none;
-            color: var(--sub);
-            cursor: pointer;
-        }
-        /* Estilos para a nova funcionalidade de esconder/exibir */
-        .details-container {
-            display: none; /* Inicia oculto */
+            padding: 16px;
+            border: 4px solid var(--mc-panel-border-dark); 
+            box-shadow: 
+                4px 4px 0 0 var(--mc-panel-border-light),
+                -4px -4px 0 0 var(--mc-panel-border-light),
+                4px -4px 0 0 var(--mc-panel-border-light),
+                -4px 4px 0 0 var(--mc-panel-border-light); 
+            
+            background: rgba(32, 32, 32, 0.8); 
+            display: flex;
             flex-direction: column;
-            gap: 24px;
+            gap: 12px;
         }
-        .toggle-btn-container {
-            text-align: center;
+        
+        /* Inner Panel/Card */
+        .mc-panel {
+            background: var(--mc-window-bg);
+            padding: 16px;
+            border: 2px solid;
+            border-color: var(--mc-panel-border-light) var(--mc-panel-border-dark) var(--mc-panel-border-dark) var(--mc-panel-border-light);
         }
-        .toggle-btn {
-            background: var(--card); color: var(--text);
-            border: 1px solid var(--border);
-            padding: 12px 20px;
-            border-radius: var(--radius);
+        
+        /* Drop and Preview Area */
+        #drop-area, #loaded-state { text-align: center; }
+        
+        /* Alinhamento do conteúdo na tela de Skin Carregada */
+        #loaded-state { 
+            display: flex;
+            flex-direction: column; 
+            align-items: center; 
+            gap: 12px;
+        }
+
+        #drop-area {
             cursor: pointer;
-            font-weight: 500; transition: transform var(--transition), box-shadow var(--transition), background var(--transition);
+            padding: 40px 20px;
+            border: 2px dashed var(--mc-panel-border-dark); 
+            /* Ensures LABEL behaves like a DIV */
+            display: block; 
         }
-        .toggle-btn:hover {
-            transform: translateY(-2px); box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-            background: var(--border);
+        #drop-area.highlight { 
+            background-color: rgba(0, 170, 0, 0.2); 
+            border-color: var(--mc-accent-color);
         }
-        #privacy-link {
-          color: #c9e0ff;
+        
+        /* =======================================================
+           BUTTONS AND SELECTS
+           ======================================================= */
+        .mc-btn, .mc-select {
+            font-family: 'Minecraft Font', 'Press Start 2P', monospace;
+            cursor: pointer;
+            text-shadow: 2px 2px 0 var(--mc-text-outline);
+            color: var(--mc-text-color);
+            padding: 8px 16px;
+            border-width: 2px;
+            
+            /* CORREÇÃO PARA CENTRALIZAR O TEXTO CORRETAMENTE */
+            display: flex; /* Transforma o botão em um container flexível */
+            justify-content: center; /* Centraliza o conteúdo horizontalmente */
+            align-items: center; /* Centraliza o conteúdo verticalmente (útil se o padding fosse assimétrico) */
+            
+            background-image: var(--mc-stone-texture-base64);
+            background-color: var(--mc-btn-bg); 
+            background-repeat: repeat; 
+            background-size: auto;
+            
+            border-style: solid;
+            border-color: var(--mc-btn-border-light) var(--mc-btn-border-dark) var(--mc-btn-border-dark) var(--mc-btn-border-light); 
         }
-        #privacy-link:hover {
-          color: #ffaa55;
+
+        .mc-btn:hover, .mc-select:hover, #drop-area:hover { 
+            background-position: 0 -15px; 
+            border-color: var(--mc-btn-hover-border-light) var(--mc-btn-hover-border-dark) var(--mc-btn-hover-border-dark) var(--mc-btn-hover-border-light); 
+        }
+        .mc-btn:active, .mc-select:active, #drop-area:active { 
+            border-color: var(--mc-btn-hover-border-dark) var(--mc-btn-hover-border-light) var(--mc-btn-hover-border-light) var(--mc-btn-hover-border-dark); 
+            transform: translateY(1px); 
+        }
+        
+        /* These classes are maintained for possible future use, but currently unused on main buttons */
+        .mc-btn-download { background-color: var(--mc-accent-color); }
+        .mc-btn-remove { background-color: var(--mc-danger-color); }
+        
+        /* Language Select */
+        .mc-select { 
+            -webkit-appearance: none; appearance: none;
+            padding: 6px 10px; 
+            height: 34px;
+            line-height: 14px;
+        }
+
+        /* Ko-fi/Language Bar (Container) */
+        .lang-kofi-bar {
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+            gap: 8px;
+        }
+
+        /* KO-FI Button Style */
+        #kofi-mc-btn {
+            height: 34px; 
+            line-height: 14px;
+            text-decoration: none;
+            flex-grow: 1; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            font-size: 14px;
+            
+            /* Copying button styles for the Ko-fi link */
+            background-image: var(--mc-stone-texture-base64);
+            background-color: var(--mc-btn-bg); 
+            background-repeat: repeat; 
+            background-size: auto;
+            border-width: 2px;
+            border-style: solid;
+            border-color: var(--mc-btn-border-light) var(--mc-btn-border-dark) var(--mc-btn-border-dark) var(--mc-btn-border-light); 
+            text-shadow: 2px 2px 0 var(--mc-text-outline);
+            color: var(--mc-text-color);
+        }
+        
+        /* Details / How To Use / Structure */
+        .details-content, .privacy-content {
+            font-size: 12px; color: #E0E0E0; text-shadow: none; line-height: 1.4;
+        }
+        
+        /* NOVO ESTILO PARA ITENS DE LISTA DE INSTRUÇÃO (HOW TO USE) */
+        .how-to-item {
+            font-size: 12px; 
+            color: #E0E0E0; 
+            text-shadow: none; 
+            line-height: 1.4;
+            padding-left: 12px; 
+            position: relative;
+        }
+        
+        /* O marcador pixelado */
+        .how-to-item::before {
+            content: "■"; 
+            color: var(--mc-text-color); 
+            font-size: 10px; 
+            position: absolute;
+            left: 0;
+            top: 0;
+        }
+
+        /* Details Titles */
+        .details-title {
+            font-size: 14px; margin-top:0;
+        }
+
+        /* ZIP STRUCTURE - Ajustado para harmonizar com HOW TO USE */
+        #zip-structure-code {
+            background:#1A1A1A; 
+            padding:10px; 
+            margin: 5px 0; /* Espaçamento padrão */
+            border: 1px solid #000; 
+            overflow-x: auto;
+            font-size: 12px; /* Mantendo o tamanho dos detalhes */
+            line-height: 1.4;
+        }
+        
+        /* Footer Link */
+        .mc-link { 
+            color: var(--mc-text-color); 
+            text-shadow: 1px 1px 0 var(--mc-text-outline); 
+            text-decoration: none; 
+            font-size: 10px;
+        }
+        
+        /* =======================================================
+           MODAL STYLES (Privacy and Secret Feature)
+           ======================================================= */
+        .privacy-modal {
+            position: fixed;
+            z-index: 1000;
+            left: 0; top: 0;
+            width: 100%; height: 100%;
+            background-color: rgba(0, 0, 0, 0.75);
+            display: flex; align-items: center; justify-content: center;
+        }
+        
+        .modal-inner {
+            position: relative; 
+            width: 90%; 
+            max-width: 480px; 
+            padding: 16px;
+            border: 4px solid var(--mc-panel-border-dark); 
+            box-shadow: 
+                4px 4px 0 0 var(--mc-panel-border-light),
+                -4px -4px 0 0 var(--mc-panel-border-light),
+                4px -4px 0 0 var(--mc-panel-border-light),
+                -4px 4px 0 0 var(--mc-panel-border-light); 
+            background: var(--mc-window-bg); 
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            overflow-y: auto; 
+        }
+
+        /* =======================================================
+           NOVO: TOAST/CONQUISTA DE AVISO DE ERRO
+           ======================================================= */
+        #error-toast {
+            position: fixed; 
+            top: -100px; 
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 10000;
+            width: 90%;
+            max-width: 400px; 
+            padding: 10px 16px;
+            
+            border: 4px solid var(--mc-panel-border-dark); 
+            box-shadow: 
+                4px 4px 0 0 var(--mc-panel-border-light),
+                -4px -4px 0 0 var(--mc-panel-border-light),
+                4px -4px 0 0 var(--mc-panel-border-light),
+                -4px 4px 0 0 var(--mc-panel-border-light); 
+            background: var(--mc-window-bg); 
+        }
+        
+        @keyframes slide-in {
+            0% { top: -100px; }
+            10% { top: 10px; } 
+            90% { top: 10px; }
+            100% { top: -100px; }
+        }
+        
+        .toast-show {
+            animation: slide-in 3.5s ease-in-out forwards; 
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <div class="card main-card">
-            <div class="lang-selector">
-                <a href="https://ko-fi.com/V7V61KZ9FL" target="_blank" rel="noopener noreferrer" class="kofi-btn">
-                    <img src="https://storage.ko-fi.com/cdn/kofi6.png?v=6" alt="Buy Me a Coffee at ko-fi.com" />
-                    <span></span>
-                </a>
-                <select id="lang-select">
-                    <option value="en">🇺🇸 English</option>
-                    <option value="pt-br">🇧🇷 Português</option>
-                    <option value="es">🇪🇸 Español</option>
-                </select>
-            </div>
-            <div id="drop-area" tabindex="0" role="button" aria-label="Arraste e solte sua skin (.png)">
-                <p id="drop-text">Arraste e solte sua skin (.png)</p>
-                <p class="info-text" id="format-text">formato: 64×64</p>
-            </div>
-            <input type="file" id="fileElem" accept="image/png">
-            <div id="loaded-state" style="display:none;">
-                <div class="loaded-info">
-                    <img id="preview" alt="Skin Preview">
-                    <p class="file-name" id="file-name-display"></p>
-                    <div style="display:flex;gap:8px">
-                        <button id="remove-button" class="btn btn-remove">✕ <span id="remove-text">Remover</span></button>
-                        <button id="download-button" class="btn btn-primary"><span id="download-text">Baixar .zip</span></button>
+    <div id="game-screen-bg">
+        <div id="gui-window">
+            <div id="upload-section" class="mc-panel">
+                <input type="file" id="file-input" accept="image/png" style="display:none;">
+
+                <label for="file-input" id="drop-area" role="button" tabindex="0">
+                    <p id="drop-text" class="pixel-text text-shadow">Drag and Drop Your PNG Skin</p>
+                    <p class="details-content"></p>
+                </label>
+                
+                <div id="loaded-state" style="display:none;">
+                    <div style="display:flex; flex-direction: column; align-items: center; gap: 10px;">
+                        <img id="skin-preview" alt="Pré-visualização da Skin" style="width: 128px; height: 128px; image-rendering: pixelated; margin-bottom: 8px; border: 4px solid; border-color: var(--mc-panel-border-dark) var(--mc-panel-border-light) var(--mc-panel-border-light) var(--mc-panel-border-dark); background: var(--mc-highlight-bg);">
+                        <p id="file-name-display" class="pixel-text text-shadow" style="font-size:14px;"></p>
+                    </div>
+                    
+                    <div style="display:flex; justify-content: center; gap: 8px; margin-top: 10px;">
+                        <button id="remove-btn" class="mc-btn pixel-text" style="width: 120px;">REMOVE</button>
+                        <button id="download-btn" class="mc-btn pixel-text" style="width: 120px;">DOWNLOAD</button>
                     </div>
                 </div>
+
+                <div id="success-message" style="display:none; padding: 20px;">
+                    <p class="pixel-text text-shadow" style="color:#FFFF55; text-align:center;">Skin pack downloaded successfully!</p>
+                </div>
             </div>
-            <div id="success-message" style="display:none;">
-                <p id="success-text">Pacote de skins baixado com sucesso!</p>
+            
+            <button id="toggle-details-btn" class="mc-btn pixel-text">SHOW DETAILS</button>
+            <div id="details-container" class="mc-panel" style="display: none; flex-direction: column; gap: 10px;">
+                <h2 id="how-to-title" class="pixel-text text-shadow details-title">HOW TO USE</h2>
+                <div id="how-to-list-container" style="display: flex; flex-direction: column; gap: 8px;">
+                    </div>
+                
+                <h2 id="zip-structure-title" class="pixel-text text-shadow details-title">ZIP STRUCTURE</h2>
+                <pre class="details-content" id="zip-structure-code" style="background:#1A1A1A; padding:10px; margin: 5px 0; border: 1px solid #000; overflow-x: auto;"></pre>
             </div>
+            
+            <div class="lang-kofi-bar">
+                <a href="https://ko-fi.com/V7V61KZ9FL" target="_blank" rel="noopener noreferrer" class="mc-btn pixel-text" id="kofi-mc-btn">
+                    <span id="kofi-text">SUPPORT ON KO-FI</span> 
+                </a>
+                
+                <select id="lang-select" class="mc-select pixel-text">
+                    <option value="en">English</option>
+                    <option value="pt-br">Português</option>
+                    <option value="es">Español</option>
+                </select>
+            </div>
+            
+            <p style="text-align: center; margin-top: 4px; margin-bottom: 0;">
+                <a href="#" id="privacy-link" class="mc-link">Privacy and Terms</a> 
+                <span class="mc-link">| v2.0.2</span> 
+            </p>
         </div>
-        
-        <div class="toggle-btn-container">
-            <button id="toggle-details-btn" class="toggle-btn">Ver Detalhes</button>
-        </div>
-        <div id="details-container" class="details-container">
-            <div class="info-box">
-                <h2 id="how-to-title">Como Usar</h2>
-                <ul id="how-to-list">
-                    <li>Baixe o .zip e ative como resource pack no jogo.</li>
-                    <li>Todas as skins padrão do jogo serão substituídas pela sua, permitindo que você as veja offline.</li>
-                </ul>
-            </div>
-            <div class="info-box">
-                <h2 id="zip-structure-title">Estrutura do ZIP</h2>
-                <pre><code id="zip-structure-code"></code></pre>
-            </div>
-            <div class="info-box" style="text-align: center;">
-                <p class="info-text">
-                    Powered by JSZip |
-                    <a href="#" id="privacy-link">Privacidade e Termos</a>
-                </p>
-                <p class="version-text">v2.0.2</p>
+    </div>
+    
+    <div id="privacy-modal" class="privacy-modal" style="display: none;">
+        <div class="modal-inner">
+            <button class="mc-btn pixel-text" 
+                    style="position: absolute; top: 4px; right: 4px; 
+                           padding: 4px 4px; width: 20px; height: 20px; 
+                           line-height: 1; font-size: 10px; text-align: center;" 
+                    id="modal-close-btn">
+                x
+            </button>
+            <h2 class="pixel-text text-shadow" id="privacy-title" style="text-align: center;">Privacy Policy and Terms of Service</h2>
+            <div class="details-content" id="privacy-text">
+                <p>This website does not collect, store, or process any personal data. All skin processing is done directly in your browser.</p>
+                <p>The generated files remain only on your computer and are not sent to the internet.</p>
+                <p>The use of the tool is completely free and does not require an account or login.</p>
             </div>
         </div>
     </div>
-    <div class="secret-feature-overlay" id="secret-feature-overlay">
-        <div class="secret-feature-content">
-            <button class="secret-feature-close" id="secret-feature-close">✕</button>
-            <div id="secret-feature-player"></div>
+
+    <div id="error-toast" style="display:none;" class="mc-panel">
+        <p id="error-toast-text" class="pixel-text" style="color:var(--mc-danger-color); text-shadow: 2px 2px 0 var(--mc-text-outline); font-size: 14px; text-align:center; margin: 0;"></p>
+    </div>
+
+    <div class="privacy-modal" id="secret-feature-overlay" style="display: none;">
+        <div class="modal-inner" style="max-width: 560px; aspect-ratio: 16/9; padding: 0; background: none; border: none; box-shadow: none;"> 
+            <div id="secret-feature-player" style="width: 100%; height: 100%;"></div>
+            <button class="mc-btn pixel-text" style="position: absolute; top: 0px; right: 0px; padding: 4px 8px; z-index: 10;" id="secret-feature-close">&times;</button>
         </div>
     </div>
-    <div id="privacy-modal" class="modal-overlay">
-        <div class="modal-content">
-            <button class="modal-close-btn">&times;</button>
-            <h2 id="privacy-title">Política de Privacidade e Termos de Serviço</h2>
-            <p id="privacy-text-1">Este site não coleta, armazena ou processa qualquer dado pessoal. Todo o processamento da sua skin é feito diretamente no seu navegador.</p>
-            <p id="privacy-text-2">Os arquivos gerados ficam apenas no seu computador e não são enviados para a internet.</p>
-            <p id="privacy-text-3">O uso da ferramenta é inteiramente gratuito e não requer conta ou login.</p>
-        </div>
-    </div>
+
+    <audio id="mc-achievement-sound" src="assets/audio/achievement.mp3" preload="auto"></audio> 
+    <audio id="mc-click-sound" src="assets/audio/click.mp3" preload="auto"></audio> 
+    <audio id="mc-download-sound" src="assets/audio/download.mp3" preload="auto"></audio> 
+
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+    <script src="https://www.youtube.com/iframe_api"></script> 
     <script>
+        // =======================================================
+        // JAVASCRIPT LOGIC
+        // =======================================================
+        
+        // Selectors
         const langSelect = document.getElementById('lang-select');
         const dropArea = document.getElementById('drop-area');
-        const fileElem = document.getElementById('fileElem');
+        const fileInput = document.getElementById('file-input');
         const loadedState = document.getElementById('loaded-state');
-        const fileNameDisplay = document.getElementById('file-name-display');
-        const preview = document.getElementById('preview');
-        const removeButton = document.getElementById('remove-button');
-        const downloadButton = document.getElementById('download-button');
         const successMessage = document.getElementById('success-message');
+        const fileNameDisplay = document.getElementById('file-name-display');
+        const preview = document.getElementById('skin-preview');
+        const removeButton = document.getElementById('remove-btn');
+        const downloadButton = document.getElementById('download-btn');
         const toggleDetailsBtn = document.getElementById('toggle-details-btn');
         const detailsContainer = document.getElementById('details-container');
+        const howToListContainer = document.getElementById('how-to-list-container'); // NOVO SELETOR
+        const privacyModal = document.getElementById('privacy-modal');
+        const privacyLink = document.getElementById('privacy-link');
+        const modalCloseBtn = document.getElementById('modal-close-btn');
+        const secretFeatureOverlay = document.getElementById('secret-feature-overlay');
+        const secretFeatureCloseButton = document.getElementById('secret-feature-close');
+        
+        // Titles and Ko-fi Selectors
+        const kofiTextSpan = document.getElementById('kofi-text');
+        const howToTitle = document.getElementById('how-to-title');
+        const zipStructureTitle = document.getElementById('zip-structure-title');
+        const privacyTitle = document.getElementById('privacy-title');
+        const privacyTextContainer = document.getElementById('privacy-text');
+
+        // Seletores de Audio
+        const clickSound = document.getElementById('mc-click-sound'); 
+        const achievementSound = document.getElementById('mc-achievement-sound'); 
+        const downloadSound = document.getElementById('mc-download-sound'); // NOVO SELETOR PARA DOWNLOAD/XP
+        
+        // NOVO SELETOR PARA TOAST DE ERRO
+        const errorToast = document.getElementById('error-toast'); 
+        const errorToastText = document.getElementById('error-toast-text'); 
+
         let skinFile = null;
+        let currentFileName = '';
+        let player = null;
+        let secretFeatureActive = false;
+        let sequence = '';
+
         const allNames = ["Steve", "Alex", "Ari", "Kai", "Noor", "Sunny", "Zuri", "Efe", "Makena"];
+        
+        // Função para tocar o som de clique
+        function playClickSound() {
+            if (clickSound) {
+                clickSound.currentTime = 0; 
+                clickSound.play().catch(e => console.log('Click Playback Blocked', e)); 
+            }
+        }
+        
+        // Função para tocar o som de achievement (usado no Toast de Erro)
+        function playAchievementSound() {
+            if (achievementSound) {
+                achievementSound.currentTime = 0; 
+                achievementSound.play().catch(e => console.log('Achievement Playback Blocked', e));
+            }
+        }
+        
+        // NOVO: Função para tocar o som de download (XP)
+        function playDownloadSound() {
+            if (downloadSound) {
+                downloadSound.currentTime = 0; 
+                downloadSound.play().catch(e => console.log('Download Playback Blocked', e));
+            }
+        }
+        
+        // NOVO: Função auxiliar para controlar a interatividade
+        function setInteractivity(enabled) {
+            langSelect.disabled = !enabled;
+            // Desabilita o botão de Download explicitamente durante o toast, se o arquivo estiver carregado.
+            // A lógica de showState cuidará da habilitação/desabilitação normal.
+            if (skinFile) {
+                downloadButton.disabled = !enabled;
+            }
+        }
+        
+        // NOVO: Função para exibir o aviso estilo conquista
+        function showErrorToast(message) {
+            playAchievementSound(); 
+            setInteractivity(false); // DESABILITA INTERAÇÃO AO MOSTRAR O TOAST
+            
+            errorToastText.textContent = message;
+            errorToast.style.display = 'block';
+            errorToast.classList.add('toast-show');
+            
+            // Remove a classe de animação após o tempo para que possa ser reexecutada
+            setTimeout(() => {
+                errorToast.classList.remove('toast-show');
+                errorToast.style.display = 'none';
+                setInteractivity(true); // HABILITA INTERAÇÃO AO ESCONDER O TOAST
+            }, 3600); 
+        }
+
+        // Translation Data
         const translations = {
             'pt-br': {
-                h1: 'Offline Skin Converter',
-                dropText: 'Arraste e solte sua skin (.png)',
-                formatText: 'formato: 64×64',
-                removeText: 'Remover',
-                downloadText: 'Baixar .zip',
-                successText: 'Pacote de skins baixado com sucesso!',
-                howToTitle: 'Como Usar',
-                howToList: [
-                    'Baixe o .zip e ative como resource pack no jogo.',
-                    'Todas as skins padrão do jogo serão substituídas pela sua, permitindo que você as veja offline.'
-                ],
-                zipStructureTitle: 'Estrutura do ZIP',
+                dropText: 'Arraste e Solte Sua Skin PNG', 
+                dropDetails: '', /* CORREÇÃO APLICADA AQUI: Texto removido */
+                kofiText: 'APOIE NO KO-FI', 
+                removeText: 'REMOVER', 
+                downloadText: 'BAIXAR', 
+                successText: 'Pacote de skins baixado com sucesso!', 
+                howToTitle: 'COMO USAR', 
+                howToList: ['Baixe o .zip e ative como Resource Pack.', 'Skins padrão (Steve, Alex, Ari, etc.) serão substituídas pela sua.'], 
+                zipStructureTitle: 'ESTRUTURA DO ZIP:', 
                 zipStructureText: `skin_pack/
   pack.mcmeta
   README.txt
   assets/minecraft/textures/entity/
     ├ steve.png
     ├ alex.png
-    ├ ... (todas as 9 skins padrão)
+    ├ ... (todas as 9 skins)
     ├ player/
       ├ wide/
         ├ steve.png
         ├ ...
       └ slim/
         ├ alex.png
-        ├ ...`,
-                fileNamePrefix: 'Arquivo carregado: ',
-                alertWrongFormat: 'A imagem precisa ter 64×64 pixels.',
-                alertSelectPng: 'Por favor, selecione um arquivo PNG.',
-                readme: 'Este pacote é um recurso para o Minecraft Java Edition, gerado localmente para funcionar offline. Ele substitui todas as 9 skins padrão do jogo (incluindo Steve, Alex, Ari, etc.) pela sua skin personalizada. Como ele modifica os arquivos locais do jogo, a skin funcionará perfeitamente offline ou em servidores que não carregam skins, garantindo que você sempre possa ver sua skin, e que as skins padrão de outros jogadores sejam substituídas pela sua, apenas para você.\n\nSe você descompactou o arquivo por engano, não se preocupe! Com o *CTRL* pressionado (ou *CMD* no Mac), selecione o arquivo *pack.mcmeta* e a pasta *assets*. Depois, clique com o botão direito para compactar em um novo arquivo `.zip`. O site já manda no formato certo para ser usado diretamente na pasta de recursos do seu Minecraft, geralmente em `versãodoseumine/minecraft/resourcepacks`.\n\nCriado pelo 1337rod :)',
-                mcmetaDesc: 'Pacote de skins gerado localmente para substituir as skins padrão do Minecraft. Funciona offline.',
-                kofiLink: 'Apoie no Ko-fi',
-                toggleBtnText: 'Ver Detalhes',
-                toggleBtnTextAlt: 'Ocultar Detalhes',
-                privacyTitle: 'Política de Privacidade e Termos de Serviço',
-                privacyText1: 'Este site não coleta, armazena ou processa qualquer dado pessoal. Todo o processamento da sua skin é feito diretamente no seu navegador.',
-                privacyText2: 'Os arquivos gerados ficam apenas no seu computador e não são enviados para a internet.',
-                privacyText3: 'O uso da ferramenta é inteiramente gratuito e não requer conta ou login.',
-                privacyLinkText: 'Privacidade e Termos'
+        └ ...`, 
+                fileNamePrefix: 'Arquivo carregado: ', 
+                alertWrongFormat: 'A imagem precisa ter 64×64 pixels.', 
+                alertSelectPng: 'Por favor, selecione um arquivo PNG.', 
+                readme: 'Este é um pacote de recursos para o Minecraft Java Edition, gerado localmente para funcionar offline. Ele substitui todas as 9 skins padrão do jogo (incluindo Steve, Alex, Ari, etc.) pela sua skin personalizada.\n\nCriado pelo 1337rod :)', 
+                mcmetaDesc: 'Pacote de skins gerado localmente para substituir as skins padrão do Minecraft. Funciona offline.', 
+                toggleBtnText: 'MOSTRAR DETALHES', 
+                toggleBtnTextAlt: 'OCULTAR DETALHES', 
+                privacyLink: 'Privacidade e Termos',
+                privacyTitle: 'Política de Privacidade e Termos de Serviço', 
+                privacyText: ['Este site não coleta, armazena ou processa qualquer dado pessoal. Todo o processamento da sua skin é feito diretamente no seu navegador.', 'Os arquivos gerados ficam apenas no seu computador e não são enviados para a internet.', 'O uso da ferramenta é inteiramente gratuito e não requer conta ou login.']
             },
             'en': {
-                h1: 'Offline Skin Converter',
-                dropText: 'Drag and drop your skin (.png)',
-                formatText: 'format: 64×64',
-                removeText: 'Remove',
-                downloadText: 'Download .zip',
-                successText: 'Skin pack downloaded successfully!',
-                howToTitle: 'How to Use',
-                howToList: [
-                    'Download the .zip and activate it as a resource pack in the game.',
-                    'All default game skins will be replaced with your skin, allowing you to see it offline.'
-                ],
-                zipStructureTitle: 'ZIP Structure',
+                dropText: 'Drag and Drop Your PNG Skin', 
+                dropDetails: '', /* CORREÇÃO APLICADA AQUI: Texto removido */
+                kofiText: 'SUPPORT ON KO-FI', 
+                removeText: 'REMOVE', 
+                downloadText: 'DOWNLOAD', 
+                successText: 'Skin pack downloaded successfully!', 
+                howToTitle: 'HOW TO USE', 
+                howToList: ['Download the .zip and activate it as a Resource Pack.', 'Default skins (Steve, Alex, Ari, etc.) will be replaced with your skin.'], 
+                zipStructureTitle: 'ZIP STRUCTURE:', 
                 zipStructureText: `skin_pack/
   pack.mcmeta
   README.txt
   assets/minecraft/textures/entity/
     ├ steve.png
     ├ alex.png
-    ├ ... (all 9 default skins)
+    ├ ... (all 9 skins)
     ├ player/
       ├ wide/
         ├ steve.png
         ├ ...
       └ slim/
         ├ alex.png
-        ├ ...`,
-                fileNamePrefix: 'File loaded: ',
-                alertWrongFormat: 'The image needs to be 64×64 pixels.',
-                alertSelectPng: 'Please select a PNG file.',
-                readme: 'This is a resource pack for Minecraft Java Edition, generated locally to work offline. It replaces all 9 default game skins (including Steve, Alex, Ari, etc.) with your custom skin. Since it modifies local game files, the skin will work perfectly offline or on servers that don\'t load skins, ensuring you can always see your skin, and that all default skins on other players are replaced with yours for you.\n\nIf you accidentally unzipped the file, don\'t worry! While holding *CTRL* (or *CMD* on Mac), select the *pack.mcmeta* file and the *assets* folder. Then, right-click and choose to compress them into a new `.zip` file. The site sends it in the correct format for you to place directly into your Minecraft resource pack folder, usually at `your-version-folder/minecraft/resourcepacks`.\n\nCreated by 1337rod :)',
-                mcmetaDesc: 'Locally generated skin pack to replace default Minecraft skins. Works offline.',
-                kofiLink: 'Support on Ko-fi',
-                toggleBtnText: 'Show Details',
-                toggleBtnTextAlt: 'Hide Details',
-                privacyTitle: 'Privacy Policy and Terms of Service',
-                privacyText1: 'This website does not collect, store, or process any personal data. All skin processing is done directly in your browser.',
-                privacyText2: 'The generated files remain only on your computer and are not sent to the internet.',
-                privacyText3: 'The use of the tool is completely free and does not require an account or login.',
-                privacyLinkText: 'Privacy and Terms'
+        └ ...`, 
+                fileNamePrefix: 'File loaded: ', 
+                alertWrongFormat: 'The image needs to be 64×64 pixels.', 
+                alertSelectPng: 'Please select a PNG file.', 
+                readme: 'This is a resource pack for Minecraft Java Edition, generated locally to work offline. It replaces all 9 default game skins (including Steve, Alex, Ari, etc.) with your custom skin.\n\nCreated by 1337rod :)', 
+                mcmetaDesc: 'Locally generated skin pack to replace default Minecraft skins. Works offline.', 
+                toggleBtnText: 'SHOW DETAILS', 
+                toggleBtnTextAlt: 'HIDE DETAILS', 
+                privacyLink: 'Privacy and Terms',
+                privacyTitle: 'Privacy Policy and Terms of Service', 
+                privacyText: ['This website does not collect, store, or process any personal data. All skin processing is done directly in your browser.', 'The generated files remain only on your computer and are not sent to the internet.', 'The use of the tool is completely free and does not require an account or login.']
             },
             'es': {
-                h1: 'Convertidor de Skins Offline',
-                dropText: 'Arrastra y suelta tu skin (.png)',
-                formatText: 'formato: 64×64',
-                removeText: 'Remover',
-                downloadText: 'Descargar .zip',
-                successText: '¡Paquete de skins descargado con éxito!',
-                howToTitle: 'Cómo Usar',
-                howToList: [
-                    'Descarga el .zip y actívalo como un paquete de recursos en el juego.',
-                    'Todas las skins predeterminadas del juego serán reemplazadas por la tuya, lo que te permitirá verla sin conexión.'
-                ],
-                zipStructureTitle: 'Estructura del ZIP',
+                dropText: 'Arrastra y Suelta Tu Skin PNG', 
+                dropDetails: '', /* CORREÇÃO APLICADA AQUI: Texto removido */
+                kofiText: 'APOYA EN KO-FI', 
+                removeText: 'QUITAR', 
+                downloadText: 'DESCARGAR', 
+                successText: '¡Paquete de skins descargado con éxito!', 
+                howToTitle: 'CÓMO USAR', 
+                howToList: ['Descarga el .zip y actívalo como Paquete de Recursos.', 'Las skins predeterminadas (Steve, Alex, Ari, etc.) serán reemplazadas por la tuya.'], 
+                zipStructureTitle: 'ESTRUCTURA DEL ZIP:', 
                 zipStructureText: `skin_pack/
   pack.mcmeta
   README.txt
   assets/minecraft/textures/entity/
     ├ steve.png
     ├ alex.png
-    ├ ... (todas las 9 skins predeterminadas)
+    ├ ... (todas las 9 skins)
     ├ player/
       ├ wide/
         ├ steve.png
         ├ ...
       └ slim/
         ├ alex.png
-        ├ ...`,
-                fileNamePrefix: 'Archivo cargado: ',
-                alertWrongFormat: 'La imagen debe tener 64×64 píxeles.',
-                alertSelectPng: 'Por favor, selecciona un archivo PNG.',
-                readme: 'Este es un paquete de recursos para Minecraft Java Edition, generado localmente para funcionar sin conexión. Reemplaza las 9 skins predeterminadas del juego (incluyendo a Steve, Alex, Ari, etc.) con tu skin personalizada. Como modifica los archivos locales del juego, la skin funcionará perfectamente sin conexión o en servidores que no cargan skins, asegurando que siempre puedas ver tu skin, y que las skins predeterminadas de otros jugadores se reemplacen por la tuya para ti.\n\nSi descomprimiste el archivo por accidente, ¡no te preocupes! Mientras mantienes presionado *CTRL* (o *CMD* en Mac), selecciona el archivo *pack.mcmeta* y la carpeta *assets*. Luego, haz clic derecho y elige comprimirlos en un nuevo archivo `.zip`. El sitio lo envía en el formato correcto para que lo coloques directamente en la carpeta de paquetes de recursos de tu Minecraft, generalmente en `tu-carpeta-de-version/minecraft/resourcepacks`.\n\nCriado por 1337rod :)',
-                mcmetaDesc: 'Paquete de skins generado localmente para reemplazar las skins predeterminadas de Minecraft. Funciona sin conexión.',
-                kofiLink: 'Apoya en Ko-fi',
-                toggleBtnText: 'Mostrar Detalhes',
-                toggleBtnTextAlt: 'Ocultar Detalhes',
-                privacyTitle: 'Política de Privacidad y Términos de Servicio',
-                privacyText1: 'Este sitio no recopila, armazena nem processa nenhum dado pessoal. Todo o processamento da sua skin se realiza directamente no seu navegador.',
-                privacyText2: 'Os arquivos gerados permanecem apenas em seu computador e não são enviados para a Internet.',
-                privacyText3: 'O uso da ferramenta é completamente gratuito e não requer uma conta o início de sessão.',
-                privacyLinkText: 'Privacidad y Términos'
+        └ ...`, 
+                fileNamePrefix: 'Archivo cargado: ', 
+                alertWrongFormat: 'La imagen debe tener 64×64 píxeles.', 
+                alertSelectPng: 'Por favor, selecciona un archivo PNG.', 
+                readme: 'Este es un paquete de recursos para Minecraft Java Edition, generado localmente para funcionar sin conexión. Reemplaza las 9 skins predeterminadas del juego (incluyendo Steve, Alex, Ari, etc.) con tu skin personalizada.\n\nCreado por 1337rod :)', 
+                mcmetaDesc: 'Paquete de skins generado localmente para reemplazar las skins predeterminadas de Minecraft. Funciona sin conexión.', 
+                toggleBtnText: 'MOSTRAR DETALLES', // CORRIGIDO: DETALHES -> DETALLES
+                toggleBtnTextAlt: 'OCULTAR DETALLES', // CORRIGIDO: DETALHES -> DETALLES
+                privacyLink: 'Privacidad y Términos',
+                privacyTitle: 'Política de Privacidad y Términos de Servicio', 
+                privacyText: ['Este sitio no recopila, almacena ni processa ningún dato personal. Todo el procesamiento de su skin se realiza directamente en su navegador.', 'Los archivos generados permanecen solo en su computadora **y no se envían** a Internet.', // CORRIGIDO
+                'El uso de la herramienta es completamente gratuito **y no requiere** una cuenta ni inicio de sesión.' // CORRIGIDO
+            ]
             }
         };
-        let currentFileName = '';
-        const mainTitleElement = document.getElementById('main-title');
-        const privacyTitleElement = document.getElementById('privacy-title');
-        const privacyText1Element = document.getElementById('privacy-text-1');
-        const privacyText2Element = document.getElementById('privacy-text-2');
-        const privacyText3Element = document.getElementById('privacy-text-3');
-        const privacyLinkElement = document.getElementById('privacy-link');
+
         function updateText(lang) {
             const texts = translations[lang];
-            dropArea.querySelector('#drop-text').textContent = texts.dropText;
-            dropArea.querySelector('#format-text').textContent = texts.formatText;
-            removeButton.querySelector('#remove-text').textContent = texts.removeText;
-            downloadButton.querySelector('#download-text').textContent = texts.downloadText;
-            successMessage.querySelector('#success-text').textContent = texts.successText;
-            document.getElementById('how-to-title').textContent = texts.howToTitle;
-            document.getElementById('zip-structure-title').textContent = texts.zipStructureTitle;
-            privacyTitleElement.textContent = texts.privacyTitle;
-            privacyText1Element.textContent = texts.privacyText1;
-            privacyText2Element.textContent = texts.privacyText2;
-            privacyText3Element.textContent = texts.privacyText3;
-            toggleDetailsBtn.textContent = detailsContainer.style.display === 'flex' ? texts.toggleBtnTextAlt : texts.toggleBtnText;
-            privacyLinkElement.textContent = texts.privacyLinkText;
             
-            const howToList = document.getElementById('how-to-list');
-            howToList.innerHTML = '';
-            texts.howToList.forEach(item => {
-                const li = document.createElement('li');
-                li.textContent = item;
-                howToList.appendChild(li);
-            });
+            // Main texts and buttons
+            dropArea.querySelector('#drop-text').textContent = texts.dropText; 
+            dropArea.querySelector('.details-content').textContent = texts.dropDetails; 
+            kofiTextSpan.textContent = texts.kofiText; 
+            removeButton.textContent = texts.removeText;
+            downloadButton.textContent = texts.downloadText;
+            
+            // Details Toggle
+            const isVisible = detailsContainer.style.display === 'flex';
+            toggleDetailsBtn.textContent = isVisible ? texts.toggleBtnTextAlt : texts.toggleBtnText;
+            
+            // Details Titles and Content
+            howToTitle.textContent = texts.howToTitle;
+            zipStructureTitle.textContent = texts.zipStructureTitle;
+            
+            // NOVO: Renderiza HOW TO USE como parágrafos com marcador pixelado (CSS .how-to-item)
+            howToListContainer.innerHTML = texts.howToList
+                .map(item => `<p class="how-to-item">${item}</p>`)
+                .join('');
+                
+            // ZIP STRUCTURE (mantém o PRE com o conteúdo traduzido e formatação)
             document.getElementById('zip-structure-code').textContent = texts.zipStructureText;
+            
+            // Privacy
+            document.getElementById('privacy-link').textContent = texts.privacyLink; 
+            privacyTitle.textContent = texts.privacyTitle;
+            privacyTextContainer.innerHTML = texts.privacyText.map(p => `<p>${p}</p>`).join('');
+            
+            // Loaded State
             if (skinFile) {
-                fileNameDisplay.textContent = currentFileName;
+                fileNameDisplay.textContent = texts.fileNamePrefix + currentFileName;
             } else {
                 fileNameDisplay.textContent = '';
             }
+            if (successMessage.style.display === "block") {
+                 successMessage.querySelector('.text-shadow').textContent = texts.successText;
+            }
         }
         
-        langSelect.addEventListener('change', (event) => {
-            updateText(event.target.value);
-        });
-        updateText(langSelect.value);
-        toggleDetailsBtn.addEventListener('click', () => {
-            const isVisible = detailsContainer.style.display === 'flex';
-            detailsContainer.style.display = isVisible ? 'none' : 'flex';
-            toggleDetailsBtn.textContent = isVisible ? translations[langSelect.value].toggleBtnTextAlt : translations[langSelect.value].toggleBtnText;
-        });
         function showState(state) {
-            dropArea.style.display = state === "drop" ? "block" : "none";
-            loadedState.style.display = state === "loaded" ? "block" : "none";
-            successMessage.style.display = state === "success" ? "block" : "none";
+            dropArea.style.display = "none";
+            loadedState.style.display = "none";
+            successMessage.style.display = "none";
+            
             if (state === "drop") {
-                fileElem.value = "";
-                preview.src = "";
-                fileNameDisplay.textContent = "";
+                dropArea.style.display = "block";
+                fileInput.value = "";
                 skinFile = null;
                 currentFileName = '';
+            } else if (state === "loaded") {
+                loadedState.style.display = "flex"; 
+            } else if (state === "success") {
+                successMessage.style.display = "block";
+                setTimeout(() => showState("drop"), 3000);
             }
+            updateText(langSelect.value); 
         }
         
-        ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(ev => {
-            dropArea.addEventListener(ev, e => { e.preventDefault(); e.stopPropagation(); });
-        });
-        ['dragenter', 'dragover'].forEach(ev => dropArea.addEventListener(ev, () => dropArea.classList.add('highlight')));
-        ['dragleave', 'drop'].forEach(ev => dropArea.addEventListener(ev, () => dropArea.classList.remove('highlight')));
-        dropArea.addEventListener('drop', e => handleFile(e.dataTransfer.files[0]));
-        dropArea.addEventListener('click', () => fileElem.click());
-        fileElem.addEventListener('change', e => handleFile(e.target.files[0]));
-        removeButton.addEventListener('click', () => {
-            skinFile = null;
-            showState("drop");
-            updateText(langSelect.value);
-        });
-        downloadButton.addEventListener('click', async () => {
-            if (skinFile) {
-                downloadButton.disabled = true;
-                await processSkinAndCreateZip();
-                downloadButton.disabled = false;
-            }
-        });
         function handleFile(file) {
             const currentLangTexts = translations[langSelect.value];
             if (!file || file.type !== "image/png") {
-                alert(currentLangTexts.alertSelectPng);
+                showErrorToast(currentLangTexts.alertSelectPng); // NOVO: Usa o Toast
                 return;
             }
             const reader = new FileReader();
@@ -498,42 +714,44 @@
                     if (img.width === 64 && img.height === 64) {
                         skinFile = file;
                         currentFileName = skinFile.name;
-                        fileNameDisplay.textContent = currentLangTexts.fileNamePrefix + currentFileName;
                         preview.src = e.target.result;
                         showState("loaded");
                     } else {
-                        alert(currentLangTexts.alertWrongFormat);
-                        fileElem.value = "";
+                        showErrorToast(currentLangTexts.alertWrongFormat); // NOVO: Usa o Toast
+                        fileInput.value = "";
                     }
                 };
                 img.src = e.target.result;
             };
             reader.readAsDataURL(file);
         }
+        
         async function processSkinAndCreateZip() {
+            downloadButton.disabled = true;
             const reader = new FileReader();
             reader.readAsDataURL(skinFile);
             reader.onload = async e => {
                 const base64Data = e.target.result.replace(/^data:image\/png;base64,/, "");
                 const lang = langSelect.value;
-                const readmeContent = translations[lang].readme;
-                const mcmetaDesc = translations[lang].mcmetaDesc;
+                const texts = translations[lang];
                 const zip = new JSZip();
                 const packFolder = zip.folder("skin_pack");
                 
-                packFolder.file("README.txt", readmeContent.replace(/\\n/g, '\n'));
+                packFolder.file("README.txt", texts.readme.replace(/\\n/g, '\n'));
                 packFolder.file("pack.mcmeta", JSON.stringify({
-                    pack: { pack_format: 14, description: [{ text: mcmetaDesc }] }
+                    pack: { pack_format: 14, description: [{ text: texts.mcmetaDesc }] }
                 }, null, 2));
                 const entityFolder = packFolder.folder("assets/minecraft/textures/entity");
                 const slimFolder = entityFolder.folder("player/slim");
                 const wideFolder = entityFolder.folder("player/wide");
+
                 allNames.forEach(name => {
                     const fileName = name.toLowerCase() + ".png";
                     entityFolder.file(fileName, base64Data, { base64: true });
                     slimFolder.file(fileName, base64Data, { base64: true });
                     wideFolder.file(fileName, base64Data, { base64: true });
                 });
+                
                 const content = await zip.generateAsync({ type: "blob" });
                 const url = URL.createObjectURL(content);
                 const a = document.createElement("a");
@@ -544,18 +762,120 @@
                 a.remove();
                 URL.revokeObjectURL(url);
                 showState("success");
-                setTimeout(() => showState("drop"), 3000);
+                downloadButton.disabled = false;
+                playDownloadSound(); // CORREÇÃO APLICADA AQUI: Chama o novo som de download/XP
             };
         }
-        // Lógica do Recurso Secreto
-        const secretFeatureOverlay = document.getElementById('secret-feature-overlay');
-        const secretFeatureCloseButton = document.getElementById('secret-feature-close');
-        let secretFeatureActive = false;
-        let player = null;
-        let sequence = '';
-        function onYouTubeIframeAPIReady() {
-            // A API já está carregada, mas o player só será criado quando necessário
+
+        // =======================================================
+        // EVENT LISTENERS
+        // =======================================================
+        
+        // Initialization
+        langSelect.value = 'en'; 
+        langSelect.addEventListener('change', (event) => {
+             updateText(event.target.value);
+             playClickSound(); 
+        });
+        updateText(langSelect.value); 
+        showState("drop"); 
+        
+        // Ko-fi Link
+        document.getElementById('kofi-mc-btn').addEventListener('click', (e) => {
+            e.preventDefault();
+            window.open('https://ko-fi.com/V7V61KZ9FL', '_blank');
+            playClickSound(); 
+        });
+
+        // Upload Drag/Drop/Select
+        ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(ev => {
+            dropArea.addEventListener(ev, e => { e.preventDefault(); e.stopPropagation(); });
+        });
+        ['dragenter', 'dragover'].forEach(ev => dropArea.addEventListener(ev, () => dropArea.classList.add('highlight')));
+        ['dragleave', 'drop'].forEach(ev => dropArea.addEventListener(ev, () => dropArea.classList.remove('highlight')));
+        
+        dropArea.addEventListener('drop', e => { 
+            handleFile(e.dataTransfer.files[0]);
+            playClickSound(); 
+        });
+        
+        fileInput.addEventListener('change', e => {
+            handleFile(e.target.files[0]);
+            playClickSound(); 
+        });
+        
+        // Accessibility Fix: Keyboard listener
+        dropArea.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault(); 
+                fileInput.click();
+                playClickSound(); 
+            }
+        });
+
+        // Actions
+        removeButton.addEventListener('click', () => { 
+            showState("drop"); 
+            playClickSound(); 
+        });
+        downloadButton.addEventListener('click', () => {
+            processSkinAndCreateZip();
+            playClickSound(); 
+        });
+        
+        // Details Toggle
+        toggleDetailsBtn.addEventListener('click', () => {
+            playClickSound(); 
+            const isVisible = detailsContainer.style.display === 'flex';
+            
+            // 1. Change the state of the container
+            detailsContainer.style.display = isVisible ? 'none' : 'flex';
+            
+            // 2. CORREÇÃO DA LÓGICA DO TEXTO:
+            // Se estava visível (isVisible=true), agora está escondido, o botão deve dizer "MOSTRAR".
+            // Se estava escondido (isVisible=false), agora está visível, o botão deve dizer "OCULTAR".
+            toggleDetailsBtn.textContent = isVisible 
+                ? translations[langSelect.value].toggleBtnText    // Se estava visível, usa o texto "MOSTRAR"
+                : translations[langSelect.value].toggleBtnTextAlt; // Se estava escondido, usa o texto "OCULTAR"
+        });
+
+        // Privacy Modal
+        privacyLink.addEventListener('click', (e) => { 
+            e.preventDefault(); 
+            privacyModal.style.display = 'flex'; 
+            playClickSound(); 
+        });
+        
+        modalCloseBtn.addEventListener('click', () => { 
+            privacyModal.style.display = 'none'; 
+            playClickSound(); 
+        });
+        
+        window.addEventListener('click', (e) => { 
+            if (e.target === privacyModal) {
+                 privacyModal.style.display = 'none'; 
+                 playClickSound(); 
+            }
+        });
+        
+        // =======================================================
+        // SECRET FEATURE (EASTER EGG)
+        // =======================================================
+
+        // 1. YouTube Player initialization function
+        function initializePlayer() {
+             player = new YT.Player('secret-feature-player', {
+                videoId: 'VqAGrH-qVwE',
+                playerVars: { 'autoplay': 1, 'rel': 0, 'showinfo': 0, 'modestbranding': 1 },
+                events: { 'onStateChange': onPlayerStateChange }
+            });
         }
+        
+        // 2. Ensures the player is initialized when the API is ready
+        window.onYouTubeIframeAPIReady = () => {
+             initializePlayer();
+        }
+
         document.addEventListener('keydown', (e) => {
             if (secretFeatureActive) return;
             const key = e.key;
@@ -565,68 +885,28 @@
                     secretFeatureOverlay.style.display = 'flex';
                     secretFeatureActive = true;
                     sequence = '';
-                    if (!player) {
-                        player = new YT.Player('secret-feature-player', {
-                            videoId: 'VqAGrH-qVwE',
-                            playerVars: {
-                                'autoplay': 1,
-                                'rel': 0,
-                                'showinfo': 0,
-                                'modestbranding': 1
-                            },
-                            events: {
-                                'onReady': onPlayerReady,
-                                'onStateChange': onPlayerStateChange
-                            }
-                        });
-                    } else {
+                    if (player) {
                         player.playVideo();
-                    }
+                    } 
                 }
             } else {
                 sequence = '';
             }
         });
-        function onPlayerReady(event) {
-            // O vídeo começa a tocar automaticamente devido ao `autoplay: 1`
-        }
+
         function onPlayerStateChange(event) {
-            // Se o vídeo terminar (estado 0), fecha a sobreposição
-            if (event.data === YT.PlayerState.ENDED) {
-                closeSecretFeature();
-            }
+            // Closes if video ends
+            if (event.data === YT.PlayerState.ENDED) { closeSecretFeature(); }
         }
-        secretFeatureCloseButton.addEventListener('click', () => {
-            closeSecretFeature();
-        });
+        
+        secretFeatureCloseButton.addEventListener('click', () => closeSecretFeature());
+
         function closeSecretFeature() {
             secretFeatureOverlay.style.display = 'none';
-            if (player) {
-                player.stopVideo();
-            }
+            secretFeatureActive = false;
+            if (player) { player.stopVideo(); }
         }
-        // Carrega a API do YouTube
-        var tag = document.createElement('script');
-        tag.src = "https://www.youtube.com/iframe_api";
-        var firstScriptTag = document.getElementsByTagName('script')[0];
-        firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
         
-        // JavaScript do Modal de Privacidade
-        const privacyModal = document.getElementById('privacy-modal');
-        const privacyLink = document.getElementById('privacy-link');
-        const modalCloseBtn = document.querySelector('.modal-close-btn');
-        privacyLink.addEventListener('click', (e) => {
-            e.preventDefault();
-            privacyModal.style.display = 'flex';
-        });
-        modalCloseBtn.addEventListener('click', () => {
-            privacyModal.style.display = 'none';
-        });
-        window.addEventListener('click', (e) => {
-            if (e.target === privacyModal) {
-                privacyModal.style.display = 'none';
-            }
-        });
     </script>
 </body>
 </html>
