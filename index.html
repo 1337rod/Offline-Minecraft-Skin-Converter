@@ -175,7 +175,7 @@
 
         .mc-btn:hover, .mc-select:hover, #drop-area:hover { 
             background-position: 0 -15px; 
-            border-color: var(--mc-btn-hover-border-light) var(--mc-btn-hover-border-dark) var(--mc-btn-hover-border-dark) var(--mc-btn-hover-border-light); 
+            border-color: var(--mc-btn-hover-border-light) var(--mc-btn-hover-border-dark) var(--mc-btn-hover-border-dark) var(--mc-btn-hover-light); 
         }
         .mc-btn:active, .mc-select:active, #drop-area:active { 
             border-color: var(--mc-btn-hover-border-dark) var(--mc-btn-hover-border-light) var(--mc-btn-hover-border-light) var(--mc-btn-hover-border-dark); 
@@ -447,7 +447,7 @@
         const downloadButton = document.getElementById('download-btn');
         const toggleDetailsBtn = document.getElementById('toggle-details-btn');
         const detailsContainer = document.getElementById('details-container');
-        const howToListContainer = document.getElementById('how-to-list-container'); // NOVO SELETOR
+        const howToListContainer = document.getElementById('how-to-list-container'); 
         const privacyModal = document.getElementById('privacy-modal');
         const privacyLink = document.getElementById('privacy-link');
         const modalCloseBtn = document.getElementById('modal-close-btn');
@@ -464,7 +464,7 @@
         // Seletores de Audio
         const clickSound = document.getElementById('mc-click-sound'); 
         const achievementSound = document.getElementById('mc-achievement-sound'); 
-        const downloadSound = document.getElementById('mc-download-sound'); // NOVO SELETOR PARA DOWNLOAD/XP
+        const downloadSound = document.getElementById('mc-download-sound'); 
         
         // NOVO SELETOR PARA TOAST DE ERRO
         const errorToast = document.getElementById('error-toast'); 
@@ -475,6 +475,7 @@
         let player = null;
         let secretFeatureActive = false;
         let sequence = '';
+        let isYouTubeApiReady = false; // NOVO: Flag para saber se a API carregou
 
         const allNames = ["Steve", "Alex", "Ari", "Kai", "Noor", "Sunny", "Zuri", "Efe", "Makena"];
         
@@ -533,7 +534,7 @@
         const translations = {
             'pt-br': {
                 dropText: 'Arraste e Solte Sua Skin PNG', 
-                dropDetails: '', /* CORREÇÃO APLICADA AQUI: Texto removido */
+                dropDetails: '', 
                 kofiText: 'APOIE NO KO-FI', 
                 removeText: 'REMOVER', 
                 downloadText: 'BAIXAR', 
@@ -568,7 +569,7 @@
             },
             'en': {
                 dropText: 'Drag and Drop Your PNG Skin', 
-                dropDetails: '', /* CORREÇÃO APLICADA AQUI: Texto removido */
+                dropDetails: '', 
                 kofiText: 'SUPPORT ON KO-FI', 
                 removeText: 'REMOVE', 
                 downloadText: 'DOWNLOAD', 
@@ -603,7 +604,7 @@
             },
             'es': {
                 dropText: 'Arrastra y Suelta Tu Skin PNG', 
-                dropDetails: '', /* CORREÇÃO APLICADA AQUI: Texto removido */
+                dropDetails: '', 
                 kofiText: 'APOYA EN KO-FI', 
                 removeText: 'QUITAR', 
                 downloadText: 'DESCARGAR', 
@@ -630,12 +631,12 @@
                 alertSelectPng: 'Por favor, selecciona un archivo PNG.', 
                 readme: 'Este es un paquete de recursos para Minecraft Java Edition, generado localmente para funcionar sin conexión. Reemplaza las 9 skins predeterminadas del juego (incluyendo Steve, Alex, Ari, etc.) con tu skin personalizada.\n\nCreado por 1337rod :)', 
                 mcmetaDesc: 'Paquete de skins generado localmente para reemplazar las skins predeterminadas de Minecraft. Funciona sin conexión.', 
-                toggleBtnText: 'MOSTRAR DETALLES', // CORRIGIDO: DETALHES -> DETALLES
-                toggleBtnTextAlt: 'OCULTAR DETALLES', // CORRIGIDO: DETALHES -> DETALLES
+                toggleBtnText: 'MOSTRAR DETALLES', 
+                toggleBtnTextAlt: 'OCULTAR DETALLES', 
                 privacyLink: 'Privacidad y Términos',
                 privacyTitle: 'Política de Privacidad y Términos de Servicio', 
-                privacyText: ['Este sitio no recopila, almacena ni processa ningún dato personal. Todo el procesamiento de su skin se realiza directamente en su navegador.', 'Los archivos generados permanecen solo en su computadora **y no se envían** a Internet.', // CORRIGIDO
-                'El uso de la herramienta es completamente gratuito **y no requiere** una cuenta ni inicio de sesión.' // CORRIGIDO
+                privacyText: ['Este sitio no recopila, almacena ni processa ningún dato personal. Todo el procesamiento de su skin se realiza directamente en su navegador.', 'Los archivos generados permanecen solo en su computadora **y no se envían** a Internet.', 
+                'El uso de la herramienta es completamente gratuito **y no requiere** una cuenta ni inicio de sesión.' 
             ]
             }
         };
@@ -704,7 +705,7 @@
         function handleFile(file) {
             const currentLangTexts = translations[langSelect.value];
             if (!file || file.type !== "image/png") {
-                showErrorToast(currentLangTexts.alertSelectPng); // NOVO: Usa o Toast
+                showErrorToast(currentLangTexts.alertSelectPng); 
                 return;
             }
             const reader = new FileReader();
@@ -717,7 +718,7 @@
                         preview.src = e.target.result;
                         showState("loaded");
                     } else {
-                        showErrorToast(currentLangTexts.alertWrongFormat); // NOVO: Usa o Toast
+                        showErrorToast(currentLangTexts.alertWrongFormat); 
                         fileInput.value = "";
                     }
                 };
@@ -763,7 +764,7 @@
                 URL.revokeObjectURL(url);
                 showState("success");
                 downloadButton.disabled = false;
-                playDownloadSound(); // CORREÇÃO APLICADA AQUI: Chama o novo som de download/XP
+                playDownloadSound(); 
             };
         }
 
@@ -832,11 +833,9 @@
             detailsContainer.style.display = isVisible ? 'none' : 'flex';
             
             // 2. CORREÇÃO DA LÓGICA DO TEXTO:
-            // Se estava visível (isVisible=true), agora está escondido, o botão deve dizer "MOSTRAR".
-            // Se estava escondido (isVisible=false), agora está visível, o botão deve dizer "OCULTAR".
             toggleDetailsBtn.textContent = isVisible 
-                ? translations[langSelect.value].toggleBtnText    // Se estava visível, usa o texto "MOSTRAR"
-                : translations[langSelect.value].toggleBtnTextAlt; // Se estava escondido, usa o texto "OCULTAR"
+                ? translations[langSelect.value].toggleBtnText    
+                : translations[langSelect.value].toggleBtnTextAlt; 
         });
 
         // Privacy Modal
@@ -862,18 +861,31 @@
         // SECRET FEATURE (EASTER EGG)
         // =======================================================
 
-        // 1. YouTube Player initialization function
+        // 1. Função que CRIA e INICIALIZA o YouTube Player
         function initializePlayer() {
+            // Garante que a API do YT está disponível
+            if (typeof YT === 'undefined' || typeof YT.Player !== 'function') {
+                console.error("YouTube IFrame API não carregada.");
+                return;
+            }
+            
              player = new YT.Player('secret-feature-player', {
                 videoId: 'VqAGrH-qVwE',
-                playerVars: { 'autoplay': 1, 'rel': 0, 'showinfo': 0, 'modestbranding': 1 },
-                events: { 'onStateChange': onPlayerStateChange }
+                playerVars: { 
+                    'autoplay': 1,  
+                    'rel': 0, 
+                    'showinfo': 0, 
+                    'modestbranding': 1 
+                },
+                events: { 
+                    'onStateChange': onPlayerStateChange 
+                }
             });
         }
         
-        // 2. Ensures the player is initialized when the API is ready
+        // 2. Flag para saber se a API carregou. NÃO CHAMA initializePlayer() AQUI!
         window.onYouTubeIframeAPIReady = () => {
-             initializePlayer();
+             isYouTubeApiReady = true;
         }
 
         document.addEventListener('keydown', (e) => {
@@ -882,10 +894,16 @@
             if (key === '1' || key === '3' || key === '7') {
                 sequence += key;
                 if (sequence.includes('1337')) {
+                    
+                    // Lógica para ABRIR o Modal
                     secretFeatureOverlay.style.display = 'flex';
                     secretFeatureActive = true;
                     sequence = '';
-                    if (player) {
+                    
+                    // CORREÇÃO: Inicializa o player SOMENTE na primeira vez
+                    if (!player && isYouTubeApiReady) {
+                        initializePlayer(); 
+                    } else if (player) {
                         player.playVideo();
                     } 
                 }
@@ -904,7 +922,9 @@
         function closeSecretFeature() {
             secretFeatureOverlay.style.display = 'none';
             secretFeatureActive = false;
-            if (player) { player.stopVideo(); }
+            if (player) { 
+                player.stopVideo(); 
+            }
         }
         
     </script>
